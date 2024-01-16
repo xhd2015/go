@@ -8,6 +8,7 @@ package list
 import (
 	"bufio"
 	"bytes"
+	"common"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -320,18 +321,19 @@ func init() {
 }
 
 var (
-	listCompiled  = CmdList.Flag.Bool("compiled", false, "")
-	listDeps      = CmdList.Flag.Bool("deps", false, "")
-	listE         = CmdList.Flag.Bool("e", false, "")
-	listExport    = CmdList.Flag.Bool("export", false, "")
-	listFmt       = CmdList.Flag.String("f", "", "")
-	listFind      = CmdList.Flag.Bool("find", false, "")
-	listJson      = CmdList.Flag.Bool("json", false, "")
-	listM         = CmdList.Flag.Bool("m", false, "")
-	listRetracted = CmdList.Flag.Bool("retracted", false, "")
-	listTest      = CmdList.Flag.Bool("test", false, "")
-	listU         = CmdList.Flag.Bool("u", false, "")
-	listVersions  = CmdList.Flag.Bool("versions", false, "")
+	listCompiled     = CmdList.Flag.Bool("compiled", false, "")
+	listDeps         = CmdList.Flag.Bool("deps", false, "")
+	listE            = CmdList.Flag.Bool("e", false, "")
+	listExport       = CmdList.Flag.Bool("export", false, "")
+	listFmt          = CmdList.Flag.String("f", "", "")
+	listRuntimeOrder = CmdList.Flag.Bool("runtime-order", false, "")
+	listFind         = CmdList.Flag.Bool("find", false, "")
+	listJson         = CmdList.Flag.Bool("json", false, "")
+	listM            = CmdList.Flag.Bool("m", false, "")
+	listRetracted    = CmdList.Flag.Bool("retracted", false, "")
+	listTest         = CmdList.Flag.Bool("test", false, "")
+	listU            = CmdList.Flag.Bool("u", false, "")
+	listVersions     = CmdList.Flag.Bool("versions", false, "")
 )
 
 var nl = []byte{'\n'}
@@ -359,7 +361,29 @@ func runList(ctx context.Context, cmd *base.Command, args []string) {
 	}
 
 	var do func(any)
-	if *listJson {
+	var doAll func(pkgs []*load.Package)
+	if *listRuntimeOrder {
+		doAll = func(pkgs []*load.Package) {
+			type info struct {
+				Pkg           string   `json:"Pkg"`
+				NotLoadedDeps []string `json:"NotLoadedDeps"`
+			}
+			results := make([]*info, 0, len(pkgs))
+			for _, pkg := range pkgs {
+				results = append(results, &info{
+					Pkg:           pkg.ImportPath,
+					NotLoadedDeps: pkg.NotLoadedDeps,
+				})
+			}
+			b, err := json.MarshalIndent(results, "", "\t")
+			if err != nil {
+				out.Flush()
+				base.Fatalf("%s", err)
+			}
+			out.Write(b)
+			out.Write(nl)
+		}
+	} else if *listJson {
 		do = func(x any) {
 			b, err := json.MarshalIndent(x, "", "\t")
 			if err != nil {
@@ -500,6 +524,9 @@ func runList(ctx context.Context, cmd *base.Command, args []string) {
 	if *listFind && *listTest {
 		base.Fatalf("go list -test cannot be used with -find")
 	}
+	if *listRuntimeOrder {
+		common.ImportsKeepOrder = true
+	}
 
 	pkgOpts := load.PackageOpts{
 		IgnoreImports:   *listFind,
@@ -577,7 +604,9 @@ func runList(ctx context.Context, cmd *base.Command, args []string) {
 		cmdline[p] = true
 	}
 
-	if *listDeps {
+	if *listRuntimeOrder {
+		pkgs = initRuntimeOrder(pkgs)
+	} else if *listDeps {
 		// Note: This changes the order of the listed packages
 		// from "as written on the command line" to
 		// "a depth-first post-order traversal".
@@ -748,9 +777,14 @@ func runList(ctx context.Context, cmd *base.Command, args []string) {
 		}
 	}
 
-	for _, p := range pkgs {
-		do(&p.PackagePublic)
+	if doAll != nil {
+		doAll(pkgs)
+	} else {
+		for _, p := range pkgs {
+			do(&p.PackagePublic)
+		}
 	}
+
 }
 
 // loadPackageList is like load.PackageList, but prints error messages and exits
@@ -768,6 +802,38 @@ func loadPackageList(roots []*load.Package) []*load.Package {
 	}
 
 	return pkgs
+}
+
+func initRuntimeOrder(roots []*load.Package) []*load.Package {
+	seen := map[*load.Package]bool{}
+	var all []*load.Package
+	superRoot := &load.Package{
+		PackagePublic: load.PackagePublic{
+			ImportPath: "<root>",
+		},
+		Internal: load.PackageInternal{
+			Imports: roots,
+		},
+	}
+	all = append(all, superRoot)
+	all = doInitRuntimeOrder(superRoot, seen, nil, all)
+	all = all[:len(all)-1] // remove last superRoot
+	return all
+}
+
+func doInitRuntimeOrder(pkg *load.Package, seen map[*load.Package]bool, parent *load.Package, all []*load.Package) []*load.Package {
+	if seen[pkg] {
+		return all
+	}
+	seen[pkg] = true
+	if parent != nil {
+		parent.NotLoadedDeps = append(parent.NotLoadedDeps, pkg.ImportPath)
+	}
+	for _, p := range pkg.Internal.Imports {
+		all = doInitRuntimeOrder(p, seen, pkg, all)
+	}
+	all = append(all, pkg)
+	return all
 }
 
 // TrackingWriter tracks the last byte written on every write so

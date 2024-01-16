@@ -6,6 +6,7 @@ package build
 
 import (
 	"bytes"
+	"common"
 	"errors"
 	"fmt"
 	"go/ast"
@@ -831,6 +832,10 @@ Found:
 	xTestImportPos := make(map[string][]token.Position)
 	allTags := make(map[string]bool)
 	fset := token.NewFileSet()
+
+	var importsUnordered []string
+	var testImportsUnordered []string
+	var xtestImportsUnordered []string
 	for _, d := range dirs {
 		if d.IsDir() {
 			continue
@@ -978,6 +983,14 @@ Found:
 		*fileList = append(*fileList, name)
 		if importMap != nil {
 			for _, imp := range info.imports {
+				switch {
+				case isXTest:
+					xtestImportsUnordered = append(xtestImportsUnordered, imp.path)
+				case isTest:
+					testImportsUnordered = append(testImportsUnordered, imp.path)
+				default:
+					importsUnordered = append(importsUnordered, imp.path)
+				}
 				importMap[imp.path] = append(importMap[imp.path], fset.Position(imp.pos))
 			}
 		}
@@ -1000,6 +1013,12 @@ Found:
 	p.Imports, p.ImportPos = cleanDecls(importPos)
 	p.TestImports, p.TestImportPos = cleanDecls(testImportPos)
 	p.XTestImports, p.XTestImportPos = cleanDecls(xTestImportPos)
+
+	if common.ImportsKeepOrder {
+		p.Imports = common.Deduplicate(importsUnordered)
+		p.TestImports = common.Deduplicate(testImportsUnordered)
+		p.XTestImports = common.Deduplicate(xtestImportsUnordered)
+	}
 
 	// add the .S/.sx files only if we are using cgo
 	// (which means gcc will compile them).

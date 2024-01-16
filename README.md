@@ -1,3 +1,32 @@
+# IMPORTANT NOTICE
+This is a modified version of the go1.17.5.
+
+The main change is that, we support `go list` with new `-not-loaded-deps` flag, which will preserve the **imports order** of the loaded packages, making it more consistent with the runtime package loading order.
+
+# Background
+Correct me if this is wrong: when running, go loads imported packages in their appearance order, no sorting involved.
+
+However, the default `go list -deps` is to print imports in sorted order, which does not reflect the runtime nature.
+
+Sometimes it is useful to inspect bootstraping order of the program, but you cannot determine it unless you run it.
+
+By this change, a static bootstraping flow can be statically generated without running the program.
+
+# USAGE
+If you want to inspect runtime init order, run:
+```
+go run github.com/xhd2015/go/src/cmd/go list -runtime-order
+```
+
+The default output is a JSON map like:
+```json
+{
+    "<root>":["cmd-line-options"],
+    "...":[],
+    "cmd-line-options":["pkg/imported/by/main"]
+}
+```
+# ----- below are original README -----
 # The Go Programming Language
 
 Go is an open source programming language that makes it easy to build simple,

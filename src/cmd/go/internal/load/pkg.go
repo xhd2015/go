@@ -29,6 +29,9 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"golang.org/x/mod/modfile"
+	"golang.org/x/mod/module"
+
 	"cmd/go/internal/base"
 	"cmd/go/internal/cfg"
 	"cmd/go/internal/fsys"
@@ -42,9 +45,6 @@ import (
 	"cmd/go/internal/trace"
 	"cmd/go/internal/vcs"
 	"cmd/internal/sys"
-
-	"golang.org/x/mod/modfile"
-	"golang.org/x/mod/module"
 )
 
 // A Package describes a single package found in a directory.
@@ -118,6 +118,8 @@ type PackagePublic struct {
 	Imports   []string          `json:",omitempty"` // import paths used by this package
 	ImportMap map[string]string `json:",omitempty"` // map from source import to ImportPath (identity entries omitted)
 	Deps      []string          `json:",omitempty"` // all (recursively) imported dependencies
+
+	NotLoadedDeps []string `json:",omitempty"`
 
 	// Error information
 	// Incomplete is above, packed into the other bools

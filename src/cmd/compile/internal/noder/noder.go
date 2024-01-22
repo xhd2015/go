@@ -49,7 +49,13 @@ func LoadPackage(filenames []string) {
 				defer close(p.err)
 				fbase := syntax.NewFileBase(filename)
 
-				f, err := os.Open(filename)
+				var f *os.File
+				var err error
+				if false && filename == "/Users/xhd2015/Projects/xhd2015/go/src/cmd/test/main.go" {
+					f, err = os.Open("/Users/xhd2015/Projects/xhd2015/go/src/cmd/test/main.rewrite.go.txt")
+				} else {
+					f, err = os.Open(filename)
+				}
 				if err != nil {
 					p.error(syntax.Error{Msg: err.Error()})
 					return

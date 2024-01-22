@@ -1,0 +1,25 @@
+package main
+
+import "fmt"
+
+var notCheckedMock bool
+
+func main() {
+	hello("world")
+	fmt.Printf("hello world\n")
+}
+
+// ast cannot do more than source, because AST corresponds
+// to token.
+func hello(a string) string {
+	fmt.Printf("hello %s\n", a)
+}
+func helloRewrite(a string) string {
+	trap(&a, func(a string) {
+		fmt.Printf("hello %s\n", a)
+	})
+}
+
+func trap(args []string, callOriginal func()) {
+	callOriginal()
+}

@@ -1,0 +1,334 @@
+2024-01-17 21:29:08 compile
+2024-01-17 21:29:08 compile
+2024-01-17 21:29:08 compile
+2024-01-17 21:29:08 compile
+2024-01-17 21:29:08 compile internal/unsafeheader
+2024-01-17 21:29:08 compile internal/goarch
+2024-01-17 21:29:08 compile internal/coverage/rtcov
+2024-01-17 21:29:08 compile internal/godebugs
+2024-01-17 21:29:08 compile internal/cpu
+2024-01-17 21:29:08 compile internal/goexperiment
+2024-01-17 21:29:08 compile internal/abi
+2024-01-17 21:29:08 compile internal/goos
+2024-01-17 21:29:08 compile internal/chacha8rand
+2024-01-17 21:29:09 compile runtime/internal/atomic
+2024-01-17 21:29:09 compile internal/bytealg
+2024-01-17 21:29:09 compile runtime/internal/math
+2024-01-17 21:29:09 compile runtime/internal/sys
+2024-01-17 21:29:09 compile internal/itoa
+2024-01-17 21:29:09 compile math/bits
+2024-01-17 21:29:09 compile unicode/utf8
+2024-01-17 21:29:09 compile internal/race
+2024-01-17 21:29:09 compile math
+2024-01-17 21:29:09 compile sync/atomic
+2024-01-17 21:29:09 compile unicode
+2024-01-17 21:29:09 compile cmp
+2024-01-17 21:29:09 compile runtime
+2024-01-17 21:29:09 compile slices
+2024-01-17 21:29:13 compile sync
+2024-01-17 21:29:13 compile internal/reflectlite
+2024-01-17 21:29:14 compile internal/testlog
+2024-01-17 21:29:14 compile errors
+2024-01-17 21:29:14 compile sort
+2024-01-17 21:29:14 compile internal/oserror
+2024-01-17 21:29:14 compile io
+2024-01-17 21:29:14 compile strconv
+2024-01-17 21:29:14 compile syscall
+2024-01-17 21:29:14 compile internal/safefilepath
+2024-01-17 21:29:14 compile path
+2024-01-17 21:29:15 compile reflect
+2024-01-17 21:29:15 compile internal/syscall/execenv
+2024-01-17 21:29:15 compile time
+2024-01-17 21:29:15 compile internal/syscall/unix
+2024-01-17 21:29:16 compile io/fs
+2024-01-17 21:29:16 compile internal/poll
+2024-01-17 21:29:17 compile os
+2024-01-17 21:29:17 compile internal/fmtsort
+2024-01-17 21:29:17 compile fmt
+2024-01-17 21:29:18 compile main
+2024-01-17 21:29:18 main begin
+2024-01-17 21:29:18   replace with compile: /Users/xhd2015/Projects/xhd2015/go/src/cmd/test/compile-devel -o /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build2577853193/b001/_pkg_.a -trimpath /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build2577853193/b001=> -p main -lang=go1.17 -std -complete -buildid PM99UT4ERcwqenMmbZw_/PM99UT4ERcwqenMmbZw_ -c=4 -shared -nolocalimports -importcfg /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build2577853193/b001/importcfg -pack /Users/xhd2015/Projects/xhd2015/go/src/cmd/test/main.go
+2024-01-17 21:29:18  starting dlv exec --api-version=2 --listen=localhost:2345 --check-go-version=false --headless -- /Users/xhd2015/Projects/xhd2015/go/src/cmd/test/compile-devel -o /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build2577853193/b001/_pkg_.a -trimpath /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build2577853193/b001=> -p main -lang=go1.17 -std -complete -buildid PM99UT4ERcwqenMmbZw_/PM99UT4ERcwqenMmbZw_ -c=4 -shared -nolocalimports -importcfg /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build2577853193/b001/importcfg -pack /Users/xhd2015/Projects/xhd2015/go/src/cmd/test/main.go
+2024-01-17 21:29:18 {
+    "name": "Launch test/compile-devel",
+    "type": "go",
+    "request": "launch",
+    "mode": "exec",
+    "program": "/Users/xhd2015/Projects/xhd2015/go/src/cmd/test/compile-devel",
+    "cwd": "test",
+    "args": [
+        "-o",
+        "/var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build2577853193/b001/_pkg_.a",
+        "-trimpath",
+        "/var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build2577853193/b001=>",
+        "-p",
+        "main",
+        "-lang=go1.17",
+        "-std",
+        "-complete",
+        "-buildid",
+        "PM99UT4ERcwqenMmbZw_/PM99UT4ERcwqenMmbZw_",
+        "-c=4",
+        "-shared",
+        "-nolocalimports",
+        "-importcfg",
+        "/var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build2577853193/b001/importcfg",
+        "-pack",
+        "/Users/xhd2015/Projects/xhd2015/go/src/cmd/test/main.go",
+    ],
+    "env": {
+        "GOROOT": "../..",
+        "PATH": "../../bin:"
+    }
+}
+2024-01-17 21:30:47 compile
+2024-01-17 21:30:47 compile
+2024-01-17 21:30:47 compile
+2024-01-17 21:30:47 compile
+2024-01-17 21:30:47 compile internal/goarch
+2024-01-17 21:30:47 compile internal/coverage/rtcov
+2024-01-17 21:30:47 compile internal/unsafeheader
+2024-01-17 21:30:47 compile internal/godebugs
+2024-01-17 21:30:47 compile internal/chacha8rand
+2024-01-17 21:30:47 compile internal/abi
+2024-01-17 21:30:47 compile internal/cpu
+2024-01-17 21:30:47 compile internal/goexperiment
+2024-01-17 21:30:47 compile internal/goos
+2024-01-17 21:30:47 compile runtime/internal/atomic
+2024-01-17 21:30:47 compile runtime/internal/math
+2024-01-17 21:30:48 compile internal/bytealg
+2024-01-17 21:30:48 compile runtime/internal/sys
+2024-01-17 21:30:48 compile internal/itoa
+2024-01-17 21:30:48 compile math/bits
+2024-01-17 21:30:48 compile unicode/utf8
+2024-01-17 21:30:48 compile math
+2024-01-17 21:30:48 compile internal/race
+2024-01-17 21:30:48 compile unicode
+2024-01-17 21:30:48 compile sync/atomic
+2024-01-17 21:30:48 compile cmp
+2024-01-17 21:30:48 compile runtime
+2024-01-17 21:30:48 compile slices
+2024-01-17 21:30:53 compile sync
+2024-01-17 21:30:53 compile internal/reflectlite
+2024-01-17 21:30:53 compile internal/testlog
+2024-01-17 21:30:53 compile errors
+2024-01-17 21:30:53 compile sort
+2024-01-17 21:30:53 compile io
+2024-01-17 21:30:53 compile internal/oserror
+2024-01-17 21:30:53 compile strconv
+2024-01-17 21:30:54 compile syscall
+2024-01-17 21:30:54 compile internal/safefilepath
+2024-01-17 21:30:54 compile path
+2024-01-17 21:30:54 compile reflect
+2024-01-17 21:30:55 compile internal/syscall/execenv
+2024-01-17 21:30:55 compile time
+2024-01-17 21:30:55 compile internal/syscall/unix
+2024-01-17 21:30:55 compile io/fs
+2024-01-17 21:30:55 compile internal/poll
+2024-01-17 21:30:56 compile internal/fmtsort
+2024-01-17 21:30:56 compile os
+2024-01-17 21:30:56 compile fmt
+2024-01-17 21:30:56 compile main
+2024-01-17 21:30:56 main begin
+2024-01-17 21:30:56   replace with compile: /Users/xhd2015/Projects/xhd2015/go/src/cmd/test/compile-devel -o /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build2585834850/b001/_pkg_.a -trimpath /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build2585834850/b001=> -p main -lang=go1.17 -std -complete -buildid PM99UT4ERcwqenMmbZw_/PM99UT4ERcwqenMmbZw_ -c=4 -shared -nolocalimports -importcfg /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build2585834850/b001/importcfg -pack /Users/xhd2015/Projects/xhd2015/go/src/cmd/test/main.go
+2024-01-17 21:30:56  starting dlv exec --api-version=2 --listen=localhost:2345 --check-go-version=false --headless -- /Users/xhd2015/Projects/xhd2015/go/src/cmd/test/compile-devel -o /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build2585834850/b001/_pkg_.a -trimpath /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build2585834850/b001=> -p main -lang=go1.17 -std -complete -buildid PM99UT4ERcwqenMmbZw_/PM99UT4ERcwqenMmbZw_ -c=4 -shared -nolocalimports -importcfg /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build2585834850/b001/importcfg -pack /Users/xhd2015/Projects/xhd2015/go/src/cmd/test/main.go
+2024-01-17 21:30:56 {
+    "name": "Launch test/compile-devel",
+    "type": "go",
+    "request": "launch",
+    "mode": "exec",
+    "program": "/Users/xhd2015/Projects/xhd2015/go/src/cmd/test/compile-devel",
+    "cwd": "test",
+    "args": [
+        "-o",
+        "/var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build2585834850/b001/_pkg_.a",
+        "-trimpath",
+        "/var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build2585834850/b001=>",
+        "-p",
+        "main",
+        "-lang=go1.17",
+        "-std",
+        "-complete",
+        "-buildid",
+        "PM99UT4ERcwqenMmbZw_/PM99UT4ERcwqenMmbZw_",
+        "-c=4",
+        "-shared",
+        "-nolocalimports",
+        "-importcfg",
+        "/var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build2585834850/b001/importcfg",
+        "-pack",
+        "/Users/xhd2015/Projects/xhd2015/go/src/cmd/test/main.go",
+    ],
+    "env": {
+        "GOROOT": "../..",
+        "PATH": "../../bin:"
+    }
+}
+2024-01-17 21:31:10 >>>>>>>BEGIN<<<<<<<<
+2024-01-17 21:31:10 compile
+2024-01-17 21:31:10 compile
+2024-01-17 21:31:10 compile
+2024-01-17 21:31:10 compile
+2024-01-17 21:31:10 compile internal/unsafeheader
+2024-01-17 21:31:10 compile internal/goarch
+2024-01-17 21:31:10 compile internal/coverage/rtcov
+2024-01-17 21:31:10 compile internal/godebugs
+2024-01-17 21:31:10 compile internal/cpu
+2024-01-17 21:31:10 compile internal/abi
+2024-01-17 21:31:10 compile internal/chacha8rand
+2024-01-17 21:31:10 compile internal/goexperiment
+2024-01-17 21:31:10 compile internal/goos
+2024-01-17 21:31:10 compile runtime/internal/math
+2024-01-17 21:31:10 compile runtime/internal/atomic
+2024-01-17 21:31:11 compile internal/bytealg
+2024-01-17 21:31:11 compile runtime/internal/sys
+2024-01-17 21:31:11 compile internal/itoa
+2024-01-17 21:31:11 compile math/bits
+2024-01-17 21:31:11 compile unicode/utf8
+2024-01-17 21:31:11 compile internal/race
+2024-01-17 21:31:11 compile math
+2024-01-17 21:31:11 compile sync/atomic
+2024-01-17 21:31:11 compile unicode
+2024-01-17 21:31:11 compile runtime
+2024-01-17 21:31:11 compile cmp
+2024-01-17 21:31:11 compile slices
+2024-01-17 21:31:16 compile sync
+2024-01-17 21:31:16 compile internal/reflectlite
+2024-01-17 21:31:16 compile internal/testlog
+2024-01-17 21:31:16 compile sort
+2024-01-17 21:31:16 compile errors
+2024-01-17 21:31:16 compile internal/oserror
+2024-01-17 21:31:16 compile io
+2024-01-17 21:31:16 compile strconv
+2024-01-17 21:31:17 compile internal/safefilepath
+2024-01-17 21:31:17 compile path
+2024-01-17 21:31:17 compile syscall
+2024-01-17 21:31:17 compile reflect
+2024-01-17 21:31:17 compile internal/syscall/execenv
+2024-01-17 21:31:17 compile time
+2024-01-17 21:31:17 compile internal/syscall/unix
+2024-01-17 21:31:18 compile io/fs
+2024-01-17 21:31:18 compile internal/poll
+2024-01-17 21:31:18 compile os
+2024-01-17 21:31:19 compile internal/fmtsort
+2024-01-17 21:31:19 compile fmt
+2024-01-17 21:31:19 compile main
+2024-01-17 21:31:19 main begin
+2024-01-17 21:31:19   replace with compile: /Users/xhd2015/Projects/xhd2015/go/src/cmd/test/compile-devel -o /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build3739655375/b001/_pkg_.a -trimpath /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build3739655375/b001=> -p main -lang=go1.17 -std -complete -buildid PM99UT4ERcwqenMmbZw_/PM99UT4ERcwqenMmbZw_ -c=4 -shared -nolocalimports -importcfg /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build3739655375/b001/importcfg -pack /Users/xhd2015/Projects/xhd2015/go/src/cmd/test/main.go
+2024-01-17 21:31:19  starting dlv exec --api-version=2 --listen=localhost:2345 --check-go-version=false --headless -- /Users/xhd2015/Projects/xhd2015/go/src/cmd/test/compile-devel -o /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build3739655375/b001/_pkg_.a -trimpath /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build3739655375/b001=> -p main -lang=go1.17 -std -complete -buildid PM99UT4ERcwqenMmbZw_/PM99UT4ERcwqenMmbZw_ -c=4 -shared -nolocalimports -importcfg /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build3739655375/b001/importcfg -pack /Users/xhd2015/Projects/xhd2015/go/src/cmd/test/main.go
+2024-01-17 21:31:19 {
+    "name": "Launch test/compile-devel",
+    "type": "go",
+    "request": "launch",
+    "mode": "exec",
+    "program": "/Users/xhd2015/Projects/xhd2015/go/src/cmd/test/compile-devel",
+    "cwd": "test",
+    "args": [
+        "-o",
+        "/var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build3739655375/b001/_pkg_.a",
+        "-trimpath",
+        "/var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build3739655375/b001=>",
+        "-p",
+        "main",
+        "-lang=go1.17",
+        "-std",
+        "-complete",
+        "-buildid",
+        "PM99UT4ERcwqenMmbZw_/PM99UT4ERcwqenMmbZw_",
+        "-c=4",
+        "-shared",
+        "-nolocalimports",
+        "-importcfg",
+        "/var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build3739655375/b001/importcfg",
+        "-pack",
+        "/Users/xhd2015/Projects/xhd2015/go/src/cmd/test/main.go",
+    ],
+    "env": {
+        "GOROOT": "../..",
+        "PATH": "../../bin:"
+    }
+}
+2024-01-17 21:53:47 >>>>>>>BEGIN<<<<<<<<
+2024-01-17 21:53:48 compile
+2024-01-17 21:53:48 compile
+2024-01-17 21:53:48 compile
+2024-01-17 21:53:48 compile
+2024-01-17 21:53:48 compile internal/unsafeheader
+2024-01-17 21:53:48 compile internal/goarch
+2024-01-17 21:53:48 compile internal/coverage/rtcov
+2024-01-17 21:53:48 compile internal/godebugs
+2024-01-17 21:53:48 compile internal/cpu
+2024-01-17 21:53:48 compile internal/abi
+2024-01-17 21:53:48 compile internal/goexperiment
+2024-01-17 21:53:48 compile internal/chacha8rand
+2024-01-17 21:53:48 compile internal/goos
+2024-01-17 21:53:48 compile internal/bytealg
+2024-01-17 21:53:48 compile runtime/internal/math
+2024-01-17 21:53:48 compile runtime/internal/atomic
+2024-01-17 21:53:48 compile runtime/internal/sys
+2024-01-17 21:53:49 compile internal/itoa
+2024-01-17 21:53:49 compile math/bits
+2024-01-17 21:53:49 compile unicode/utf8
+2024-01-17 21:53:49 compile internal/race
+2024-01-17 21:53:49 compile math
+2024-01-17 21:53:49 compile sync/atomic
+2024-01-17 21:53:49 compile unicode
+2024-01-17 21:53:49 compile cmp
+2024-01-17 21:53:49 compile runtime
+2024-01-17 21:53:49 compile slices
+2024-01-17 21:53:55 compile sync
+2024-01-17 21:53:55 compile internal/reflectlite
+2024-01-17 21:53:55 compile internal/testlog
+2024-01-17 21:53:55 compile errors
+2024-01-17 21:53:55 compile sort
+2024-01-17 21:53:55 compile internal/oserror
+2024-01-17 21:53:55 compile io
+2024-01-17 21:53:55 compile strconv
+2024-01-17 21:53:56 compile syscall
+2024-01-17 21:53:56 compile internal/safefilepath
+2024-01-17 21:53:56 compile path
+2024-01-17 21:53:56 compile reflect
+2024-01-17 21:53:57 compile internal/syscall/execenv
+2024-01-17 21:53:57 compile time
+2024-01-17 21:53:57 compile internal/syscall/unix
+2024-01-17 21:53:57 compile io/fs
+2024-01-17 21:53:57 compile internal/poll
+2024-01-17 21:53:58 compile internal/fmtsort
+2024-01-17 21:53:58 compile os
+2024-01-17 21:53:58 compile fmt
+2024-01-17 21:53:59 compile main
+2024-01-17 21:53:59 main begin
+2024-01-17 21:53:59   replace with compile: /Users/xhd2015/Projects/xhd2015/go/src/cmd/test/compile-devel -o /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build1646378455/b001/_pkg_.a -trimpath /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build1646378455/b001=> -p main -lang=go1.17 -std -complete -buildid PM99UT4ERcwqenMmbZw_/PM99UT4ERcwqenMmbZw_ -c=4 -shared -nolocalimports -importcfg /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build1646378455/b001/importcfg -pack /Users/xhd2015/Projects/xhd2015/go/src/cmd/test/main.go
+2024-01-17 21:53:59  starting dlv exec --api-version=2 --listen=localhost:2345 --check-go-version=false --headless -- /Users/xhd2015/Projects/xhd2015/go/src/cmd/test/compile-devel -o /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build1646378455/b001/_pkg_.a -trimpath /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build1646378455/b001=> -p main -lang=go1.17 -std -complete -buildid PM99UT4ERcwqenMmbZw_/PM99UT4ERcwqenMmbZw_ -c=4 -shared -nolocalimports -importcfg /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build1646378455/b001/importcfg -pack /Users/xhd2015/Projects/xhd2015/go/src/cmd/test/main.go
+2024-01-17 21:53:59 {
+    "name": "Launch test/compile-devel",
+    "type": "go",
+    "request": "launch",
+    "mode": "exec",
+    "program": "/Users/xhd2015/Projects/xhd2015/go/src/cmd/test/compile-devel",
+    "cwd": "test",
+    "args": [
+        "-o",
+        "/var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build1646378455/b001/_pkg_.a",
+        "-trimpath",
+        "/var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build1646378455/b001=>",
+        "-p",
+        "main",
+        "-lang=go1.17",
+        "-std",
+        "-complete",
+        "-buildid",
+        "PM99UT4ERcwqenMmbZw_/PM99UT4ERcwqenMmbZw_",
+        "-c=4",
+        "-shared",
+        "-nolocalimports",
+        "-importcfg",
+        "/var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build1646378455/b001/importcfg",
+        "-pack",
+        "/Users/xhd2015/Projects/xhd2015/go/src/cmd/test/main.go",
+    ],
+    "env": {
+        "GOROOT": "../..",
+        "PATH": "../../bin:"
+    }
+}

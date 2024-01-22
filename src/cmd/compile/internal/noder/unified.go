@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"internal/pkgbits"
 	"io"
+	"os"
 	"runtime"
 	"sort"
 	"strings"
@@ -123,6 +124,12 @@ func lookupMethod(pkg *types.Pkg, symName string) (*ir.Func, error) {
 	return nil, fmt.Errorf("method %s missing from method set of %v", symName, typ)
 }
 
+func shitFunc(fn *ir.Func) {
+	if os.Getenv("SHIT") == "true" {
+		fn.Body.Append()
+	}
+}
+
 // unified constructs the local package's Internal Representation (IR)
 // from its syntax tree (AST).
 //
@@ -183,6 +190,7 @@ func unified(m posMap, noders []*noder) {
 
 	// Check that nothing snuck past typechecking.
 	for _, fn := range target.Funcs {
+		shitFunc(fn)
 		if fn.Typecheck() == 0 {
 			base.FatalfAt(fn.Pos(), "missed typecheck: %v", fn)
 		}

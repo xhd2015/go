@@ -1,0 +1,15 @@
+package main
+
+import "fmt"
+
+func main() {
+	trap(nil, func() {
+		goto a
+	})
+a:
+	fmt.Printf("hello world\n")
+}
+
+func trap(args []string, callOriginal func()) {
+	callOriginal()
+}

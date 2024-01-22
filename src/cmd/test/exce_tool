@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+set -e
+
+shdir=$(cd "$(dirname "$0")" && pwd)
+
+function date_log {
+   date +"%Y-%m-%d %H:%M:%S"
+}
+function log {
+    echo "$(date_log) $@"
+}
+function log_exec {
+    echo "$(date_log) $@" >> "$shdir/exec.log"
+}
+function log_compile {
+    echo "$(date_log) $@" >> "$shdir/compile.log"
+}
+function to_vscode_debug_cmd {
+args=(${@:2})
+
+cat <<EOF
+{
+    "name": "Launch test/compile-devel",
+    "type": "go",
+    "request": "launch",
+    "mode": "exec",
+    "program": "$1",
+    "cwd": "test",
+    "args": [
+EOF
+for arg in "${args[@]}";do
+    echo "        \"$arg\","
+done
+cat <<EOF
+    ],
+    "env": {
+        "GOROOT": "../..",
+        "PATH": "../../bin:${env:PATH}"
+    }
+}
+EOF
+}
+
+log_exec "$@"
+
+# NOTE arg0 is exec_tool
+# echo "arg 0 is $0"
+
+base_name=$(basename "$1")
+if [[ $base_name = compile ]];then
+    pkg=$(echo "$@"|grep -oE -- "-p .*?( |$)"|cut -c 4-|tr -d ' ') # take package
+    log_compile compile $pkg
+
+    if [[ $pkg = main ]];then
+       log_compile "main begin"
+       log_compile "  replace with compile: $PWD/compile-devel ${@:2}"
+    #  $PWD/compile-devel "${@:2}"
+       echo "debug compile begin" >&2
+       log_compile " starting dlv exec --api-version=2 --listen=localhost:2345 --check-go-version=false --headless -- $PWD/compile-devel ${@:2}"
+       log_compile "$(to_vscode_debug_cmd "$PWD/compile-devel" "${@:2}")"
+
+       # dlv exec --api-version=2 --listen=localhost:2345 --check-go-version=false --headless -- "$PWD/compile-devel" "${@:2}"
+
+       sleep 6000
+       exit
+    fi
+    
+fi
+# $0       compile
+# $1...    -V=full ... flags
+
+
+# env is primarily for evaluate env pairs like A=B
+env -- "$@"

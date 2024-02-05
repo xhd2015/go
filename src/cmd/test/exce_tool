@@ -39,6 +39,7 @@ cat <<EOF
     ],
     "env": {
         "COMPILER_ALLOW_REWRITE":"true",
+        "COMPILER_DEBUG_IR_REWRITE_FUNC":"$COMPILER_DEBUG_IR_REWRITE_FUNC",
         "GOROOT": "../..",
         "PATH": "../../bin:\${env:PATH}"
     }

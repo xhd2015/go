@@ -4,31 +4,6 @@ import (
 	"unsafe"
 )
 
-// this is so elegant that you cannot ignore it
-var ErrAbort error //  = errors.New("abort")
-
-type Interceptor interface {
-	Pre(f *FuncArgs) error
-	Post(f *FuncArgs) error
-}
-
-type FuncArgs struct {
-	Recv    interface{}
-	Args    []interface{}
-	Results []interface{}
-}
-
-type interceptor struct {
-	preCheck   func()
-	postAction func()
-}
-
-var interceptors []Interceptor
-
-func addInterceptor() {
-
-}
-
 // important thing here:
 //
 //		get arg types and argNames
@@ -45,60 +20,25 @@ func addInterceptor() {
 //	    myAction()
 //	}
 
-func __x_trap(recv interface{}, args []interface{}, results []interface{}) bool {
+func Getg_GoInspectExported() *g { return getg() }
+
+// use getg().m.curg instead of getg()
+// see: https://github.com/golang/go/blob/master/src/runtime/HACKING.md
+func Getcurg_GoInspectExported() *g { return getg().m.curg }
+
+// exported so other func can call it
+var TrapImpl_Requires_Xgo func(funcName string, recv interface{}, args []interface{}, results []interface{}) (func(), bool)
+
+func __x_trap(recv interface{}, args []interface{}, results []interface{}) (func(), bool) {
+	if TrapImpl_Requires_Xgo == nil {
+		return nil, false
+	}
 	pc := getcallerpc()
 	fn := findfunc(pc)
 	// TODO: what about inlined func?
 	funcName := fn.datap.funcName(fn.nameOff)
-
-	println("caller: ", funcName)
-
-	return false
+	return TrapImpl_Requires_Xgo(funcName, recv, args, results)
 }
-
-// func __x_trap20(recv interface{}, args []interface{}, results []interface{}) (func(), bool) {
-// 	pc := getcallerpc()
-// 	fn := findfunc(pc)
-// 	// TODO: what about inlined func?
-// 	funcName := fn.datap.funcName(fn.nameOff)
-// 	_ = funcName
-
-// 	funcArgs := &FuncArgs{
-// 		Recv:    recv,
-// 		Args:    args,
-// 		Results: results,
-// 	}
-// 	var aborted bool
-// 	i := 0
-// 	for i := 0; i < len(interceptors); i++ {
-// 		interceptor := interceptors[i]
-// 		// if
-// 		err := interceptor.Pre(funcArgs)
-// 		if err != nil {
-// 			if err == ErrAbort {
-
-// 			}
-// 			aborted := true
-// 			if aborted {
-// 				// aborted
-// 				break
-// 			}
-// 		}
-// 	}
-// 	if aborted {
-// 		for ; i >= 0; i-- {
-// 			interceptor := interceptors[i]
-// 			interceptor.Post(funcArgs)
-// 		}
-// 		return nil, true
-// 	}
-// 	return func() {
-// 		for ; i >= 0; i-- {
-// 			interceptor := interceptors[i]
-// 			interceptor.Post(funcArgs)
-// 		}
-// 	}, false
-// }
 
 // all are ptrs
 func __x_trap2(recv interface{}, args []interface{}, results []interface{}) bool {

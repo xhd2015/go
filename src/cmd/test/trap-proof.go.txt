@@ -7,12 +7,23 @@ func A(s string) int {
 	return 1
 }
 
-var trap func() (after func(), stop bool)
+var trap1 func() bool
 
-func intercepted_A(s string) int {
-	after, stop := trap()
-	if stop {
-	} else {
+func intercepted_A1(s string) int {
+	if trap1(){
+	}else{
+		if s == "hello" {
+			return len(s) + 11
+		}
+		return 1
+	}
+}
+
+var trap2 func() (after func(), stop bool)
+
+func intercepted_A2(s string) int {
+	if after, stop := trap2(); stop{
+	}else{
 		if after != nil {
 			defer after()
 		}
@@ -20,7 +31,7 @@ func intercepted_A(s string) int {
 			return len(s) + 11
 		}
 		return 1
-	}
+    }
 }
 
 // why not make a closure and pass as a pointer? that would disable many optimizations

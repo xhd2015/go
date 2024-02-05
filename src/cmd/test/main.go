@@ -11,6 +11,16 @@ func main() {
 	fmt.Printf("res: %v\n", res)
 }
 
+func test_DumpIR() {
+	after, stop := trap()
+	if !stop {
+		if after != nil {
+			defer after()
+		}
+		fmt.Printf("hello IR\n")
+	}
+}
+
 func testArgs(s string) int {
 	fmt.Printf("testArgs: %s\n", s)
 
@@ -23,4 +33,8 @@ type num int
 func (c num) add(b int) {
 	fmt.Printf("%d+%d=%d\n", c, b, int(c)+b)
 	pkg.Hello("pkg")
+}
+
+func trap() (after func(), stop bool) {
+	return nil, false
 }

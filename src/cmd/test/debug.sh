@@ -5,6 +5,8 @@ set -e
 rebuild=false
 verbose=false
 args=()
+gcflags=()
+output=
 while [[ $# -gt 0 ]];do
     case $1 in
       -a)
@@ -15,6 +17,14 @@ while [[ $# -gt 0 ]];do
         verbose=true
         shift
       ;;
+      -gcflags|--gcflags)
+      gcflags=("$1" "$2")
+      shift 2
+      ;;
+      -o)
+        output=$2
+        shift 2
+      ;;
       --help|-h)
       cat <<'EOF'
 usage: debug.sh <CMD> [OPTIONS]
@@ -23,7 +33,11 @@ Options:
    --verbose,-v    show verbose log
 
 Cmd build,debug:
-   -a              go build -a
+   -a               go build -a
+   -gcflags  FLAGS  
+   --gcflags FLAGS  go build -gcflags
+   -o file          go build -o
+            
   
 Cmd build-compiler:
 
@@ -67,7 +81,7 @@ function date_log {
 
 case "$cmd" in
    debug|build)
-      build_flags=()
+      build_flags=("${gcflags[@]}" -o "${output:-main.bin}")
       if [[ $rebuild = true ]];then
            build_flags=("${build_flags[@]}" -a)
       fi
@@ -78,7 +92,7 @@ case "$cmd" in
           tail -fn1 compile.log &
           trap "kill -9 $!" EXIT
       fi
-      PATH=$goroot/bin:$PATH GOROOT=$goroot go build -toolexec="$PWD/exce_tool $cmd" "${build_flags[@]}" -o main.bin "$@"
+      PATH=$goroot/bin:$PATH GOROOT=$goroot go build -toolexec="$shdir/exce_tool $cmd" "${build_flags[@]}" "$@"
       ;;
     build-compiler)
       (

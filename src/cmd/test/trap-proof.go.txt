@@ -1,0 +1,58 @@
+package main
+
+func A(s string) int {
+	if s == "hello" {
+		return len(s) + 11
+	}
+	return 1
+}
+
+var trap func() (after func(), stop bool)
+
+func intercepted_A(s string) int {
+	after, stop := trap()
+	if stop {
+	} else {
+		if after != nil {
+			defer after()
+		}
+		if s == "hello" {
+			return len(s) + 11
+		}
+		return 1
+	}
+}
+
+// why not make a closure and pass as a pointer? that would disable many optimizations
+//
+
+// convert to interceptor
+//
+//
+//  caller:
+//     addInterceptor(func(next func()){
+//           some pre-action
+//           next()
+//           some post-action
+//     })
+//
+//  provider: func addIntereptor(preCheck,  postAction func()){
+//     c.h = append(c.h, {pre,post})
+// }
+//
+//   preCheck = func() bool {}
+//   after = func()
+//   for _, h := c.h {
+//       lastPreCheck = preCheck
+//        if any one decided to execute the code, execute it
+//        preCheck = func(){
+//            lastPreCheck()
+//        }
+//        h.preCheck()
+//   }
+//
+//    after = func(){
+//
+//    }
+//
+//   always call the after

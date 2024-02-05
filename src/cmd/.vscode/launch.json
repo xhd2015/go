@@ -6,31 +6,32 @@
     "type": "go",
     "request": "launch",
     "mode": "exec",
-    "program": "/Users/xhd2015/Projects/xhd2015/go/src/cmd/test/compile-devel",
+    "program": "test/compile-devel",
     "cwd": "test",
     "args": [
         "-o",
-        "/var/folders/y8/kmfy7f8s5bb5qfsp0z8h7j5m0000gq/T/go-build121489759/b001/_pkg_.a",
+        "/var/folders/y8/kmfy7f8s5bb5qfsp0z8h7j5m0000gq/T/go-build2330028621/b001/_pkg_.a",
         "-trimpath",
-        "/var/folders/y8/kmfy7f8s5bb5qfsp0z8h7j5m0000gq/T/go-build121489759/b001=>",
+        "/var/folders/y8/kmfy7f8s5bb5qfsp0z8h7j5m0000gq/T/go-build2330028621/b001=>",
         "-p",
         "main",
         "-lang=go1.17",
         "-std",
         "-complete",
         "-buildid",
-        "-QS_mbbGLV7ARFJAJVEe/-QS_mbbGLV7ARFJAJVEe",
+        "KLmHcWXk5Pcly0rwxjVr/KLmHcWXk5Pcly0rwxjVr",
         "-c=4",
         "-shared",
         "-nolocalimports",
         "-importcfg",
-        "/var/folders/y8/kmfy7f8s5bb5qfsp0z8h7j5m0000gq/T/go-build121489759/b001/importcfg",
+        "/var/folders/y8/kmfy7f8s5bb5qfsp0z8h7j5m0000gq/T/go-build2330028621/b001/importcfg",
         "-pack",
         "/Users/xhd2015/Projects/xhd2015/go/src/cmd/test/main.go",
     ],
     "env": {
+        "COMPILER_ALLOW_REWRITE":"true",
         "GOROOT": "../..",
-        "PATH": "../../bin:"
+        "PATH": "../../bin:${env:PATH}"
     }
 }
     ]

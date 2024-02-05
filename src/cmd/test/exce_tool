@@ -21,13 +21,14 @@ function log_compile {
 function to_vscode_debug_cmd {
 args=(${@:2})
 
+# program could also be $1
 cat <<EOF
 {
     "name": "Launch test/compile-devel",
     "type": "go",
     "request": "launch",
     "mode": "exec",
-    "program": "$1",
+    "program": "test/compile-devel",
     "cwd": "test",
     "args": [
 EOF
@@ -37,8 +38,9 @@ done
 cat <<EOF
     ],
     "env": {
+        "COMPILER_ALLOW_REWRITE":"true",
         "GOROOT": "../..",
-        "PATH": "../../bin:${env:PATH}"
+        "PATH": "../../bin:\${env:PATH}"
     }
 }
 EOF
@@ -54,7 +56,13 @@ if [[ $base_name = compile ]];then
     pkg=$(echo "$@"|grep -oE -- "-p .*?( |$)"|cut -c 4-|tr -d ' ') # take package
     log_compile compile $pkg
 
-    if [[ $pkg = main ]];then
+    if [[ $pkg = runtime ]];then
+       log_compile "runtime output: $@"
+       log_compile "runtime output: $3"
+       trap 'log_compile "runtime end"; cp "$3" "$shdir"/runtime.a ' EXIT
+    fi
+
+    if [[ $pkg = main || $pkg = github.com/xhd2015/go/cmd/test/pkg ]];then
        # dlv exec --api-version=2 --listen=localhost:2345 --check-go-version=false --headless -- "$PWD/compile-devel" "${@:2}"
        if [[ $cmd = debug ]];then
          log_compile "to debug with dlv: dlv exec --api-version=2 --listen=localhost:2345 --check-go-version=false --headless -- \"$shdir/compile-devel\" ${@:2}"
@@ -73,7 +81,7 @@ EOF
        fi
        # use custom compiler to compile
        log_compile "replace with compile-devel: $shdir/compile-devel ${@:2}"
-       "$shdir/compile-devel" ${@:2}
+       COMPILER_ALLOW_REWRITE=true "$shdir/compile-devel" ${@:2}
        exit
     fi
     

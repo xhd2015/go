@@ -2,8 +2,55 @@
 
 set -e
 
+rebuild=false
+verbose=false
+args=()
+while [[ $# -gt 0 ]];do
+    case $1 in
+      -a)
+         rebuild=true
+         shift
+      ;;
+      -v|--verbose)
+        verbose=true
+        shift
+      ;;
+      --help|-h)
+      cat <<'EOF'
+usage: debug.sh <CMD> [OPTIONS]
+Options:
+   --help,-h       help
+   --verbose,-v    show verbose log
+
+Cmd build,debug:
+   -a              go build -a
+  
+Cmd build-compiler:
+
+Example:
+    $ debug.sh build-compiler
+    $ debug.sh build
+EOF
+      shift
+      exit
+      ;;
+      --)
+      shift
+      args=("${args[@]}" "$@")
+      break
+      ;;
+      *)
+      args=("${args[@]}" $1)
+      shift
+      ;;
+    esac
+done
+
 shdir=$(cd "$(dirname "$0")" && pwd)
+goroot=$(cd "$shdir/../../.." && pwd)
 cd "$shdir"
+
+set -- "${args[@]}"
 
 cmd=$1
 shift || true
@@ -20,17 +67,23 @@ function date_log {
 
 case "$cmd" in
    debug|build)
+      build_flags=()
+      if [[ $rebuild = true ]];then
+           build_flags=("${build_flags[@]}" -a)
+      fi
       for log in *.log;do
           echo "$(date_log) >>>>>>>BEGIN<<<<<<<<" >> "$log"
       done
-      tail -fn1 compile.log &
-      trap "kill -9 $!" EXIT
-      with-go-devel go build -toolexec="$PWD/exce_tool $cmd" -a -o main.bin ./
+      if [[ $verbose = true ]];then
+          tail -fn1 compile.log &
+          trap "kill -9 $!" EXIT
+      fi
+      PATH=$goroot/bin:$PATH GOROOT=$goroot go build -toolexec="$PWD/exce_tool $cmd" "${build_flags[@]}" -o main.bin "$@"
       ;;
     build-compiler)
       (
         cd ..
-        with-go-devel go build -gcflags="all=-N -l" -o ./test/compile-devel ./compile
+        PATH=$goroot/bin:$PATH GOROOT=$goroot go build -gcflags="all=-N -l" -o ./test/compile-devel ./compile
       )
     ;;
     *)

@@ -41,6 +41,7 @@ var builtins = [...]struct {
 	{"runtime.printuint", 1},
 	{"runtime.printcomplex", 1},
 	{"runtime.printstring", 1},
+	{"runtime.__x_trap", 0},
 	{"runtime.printpointer", 1},
 	{"runtime.printuintptr", 1},
 	{"runtime.printiface", 1},

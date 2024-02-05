@@ -138,6 +138,9 @@ func amendNoders(noders []*noder) {
 }
 
 func amendNoder(noder *noder) {
+	if os.Getenv("COMPILER_ALLOW_REWRITE") != "true" {
+		return
+	}
 	if noder.file.PkgName.Value != "main" {
 		return
 	}

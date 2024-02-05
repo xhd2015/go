@@ -54,6 +54,7 @@ func printhex(uint64)
 func printuint(uint64)
 func printcomplex(complex128)
 func printstring(string)
+func __x_trap(interface{}, []interface{}, []interface{}) bool
 func printpointer(any)
 func printuintptr(uintptr)
 func printiface(any)

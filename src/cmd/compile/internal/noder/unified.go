@@ -17,6 +17,7 @@ import (
 	"cmd/compile/internal/inline"
 	"cmd/compile/internal/ir"
 	"cmd/compile/internal/pgo"
+	"cmd/compile/internal/syntax"
 	"cmd/compile/internal/typecheck"
 	"cmd/compile/internal/types"
 	"cmd/compile/internal/types2"
@@ -130,6 +131,62 @@ func shitFunc(fn *ir.Func) {
 	}
 }
 
+func amendNoders(noders []*noder) {
+	for _, n := range noders {
+		amendNoder(n)
+	}
+}
+
+func amendNoder(noder *noder) {
+	if noder.file.PkgName.Value != "main" {
+		return
+	}
+	for _, dec := range noder.file.DeclList {
+		fn, ok := dec.(*syntax.FuncDecl)
+		if !ok {
+			continue
+		}
+		if fn.Body == nil {
+			continue
+		}
+		if fn.Name.Value != "main" {
+			continue
+		}
+		list := make([]syntax.Stmt, len(fn.Body.List)+1)
+		list[0] = &syntax.ExprStmt{
+			X: &syntax.CallExpr{
+				Fun: &syntax.SelectorExpr{
+					X: &syntax.Name{
+						Value: "fmt",
+					},
+					Sel: &syntax.Name{
+						Value: "Printf",
+					},
+				},
+				ArgList: []syntax.Expr{
+					&syntax.BasicLit{
+						Value: "\"hello compiler\\n\"",
+						Kind:  syntax.StringLit,
+					},
+				},
+			},
+		}
+
+		// if not set pos, link fails
+		syntax.Inspect(list[0], func(n syntax.Node) bool {
+			if n == nil {
+				return false
+			}
+			n.SetPos(syntax.MakePos(fn.Body.Pos().Base(), 1, 1))
+			return true
+		})
+		for i := 0; i < len(fn.Body.List); i++ {
+			list[i+1] = fn.Body.List[i]
+		}
+		fn.Body.List = list
+	}
+}
+
 // unified constructs the local package's Internal Representation (IR)
 // from its syntax tree (AST).
 //
@@ -172,6 +229,7 @@ func shitFunc(fn *ir.Func) {
 // In other words, we have all the necessary information to build the generic IR form
 // (see writer.captureVars for an example).
 func unified(m posMap, noders []*noder) {
+	amendNoders(noders)
 	inline.InlineCall = unifiedInlineCall
 	typecheck.HaveInlineBody = unifiedHaveInlineBody
 	pgo.LookupFunc = LookupFunc

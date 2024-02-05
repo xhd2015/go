@@ -2,10 +2,11 @@
 Compiler entrance: [../compile/main.go](../compile/main.go)
 ```bash
 ./debug.sh build-compiler
-./debug.sh exec
+./debug.sh debug
+./debug.sh build
 ```
 
-# Configure of git exclude
+# Configure git exclude
 ```
 root=$(git rev-parse --show-toplevel)
 mkdir -p "$root/.git/info"

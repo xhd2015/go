@@ -43,7 +43,7 @@ var archInits = map[string]func(*ssagen.ArchInfo){
 }
 
 func main() {
-	fmt.Fprintf(os.Stderr, "my custom compile\n")
+	// fmt.Fprintf(os.Stderr, "my custom compile\n")
 	// disable timestamps for reproducible output
 	log.SetFlags(0)
 	log.SetPrefix("compile: ")

@@ -19,13 +19,13 @@ function date_log {
 }
 
 case "$cmd" in
-   exec)
+   debug|build)
       for log in *.log;do
           echo "$(date_log) >>>>>>>BEGIN<<<<<<<<" >> "$log"
       done
       tail -fn1 compile.log &
       trap "kill -9 $!" EXIT
-      with-go-devel go build -toolexec="$PWD/exce_tool" -a -o main.bin ./
+      with-go-devel go build -toolexec="$PWD/exce_tool $cmd" -a -o main.bin ./
       ;;
     build-compiler)
       (

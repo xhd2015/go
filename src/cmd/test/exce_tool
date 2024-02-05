@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
+cmd=$1
+shift || true
+
 shdir=$(cd "$(dirname "$0")" && pwd)
 
 function date_log {
@@ -53,15 +56,18 @@ if [[ $base_name = compile ]];then
 
     if [[ $pkg = main ]];then
        log_compile "main begin"
-       log_compile "  replace with compile: $PWD/compile-devel ${@:2}"
+       log_compile "  replace with compile: $shdir/compile-devel ${@:2}"
     #  $PWD/compile-devel "${@:2}"
-       echo "debug compile begin" >&2
        log_compile " starting dlv exec --api-version=2 --listen=localhost:2345 --check-go-version=false --headless -- $PWD/compile-devel ${@:2}"
-       log_compile "$(to_vscode_debug_cmd "$PWD/compile-devel" "${@:2}")"
+       log_compile "$(to_vscode_debug_cmd "$shdir/compile-devel" "${@:2}")"
 
        # dlv exec --api-version=2 --listen=localhost:2345 --check-go-version=false --headless -- "$PWD/compile-devel" "${@:2}"
-
-       sleep 6000
+       if [[ $cmd = debug ]];then
+           sleep 6000
+           exit
+       fi
+       # use custom compiler to compile
+       "$shdir/compile-devel" ${@:2}
        exit
     fi
     

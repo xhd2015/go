@@ -1,59 +1,37 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch test/compile-devel",
-            "type": "go",
-            "request": "launch",
-            "mode": "exec",
-            "program": "/Users/xhd2015/Projects/xhd2015/go/src/cmd/test/compile-devel",
-            "cwd": "test",
-            "args": [
-                "-o",
-                "/var/folders/y8/kmfy7f8s5bb5qfsp0z8h7j5m0000gq/T/go-build2554020064/b001/_pkg_.a",
-                "-trimpath",
-                "/var/folders/y8/kmfy7f8s5bb5qfsp0z8h7j5m0000gq/T/go-build2554020064/b001=>",
-                "-p",
-                "main",
-                "-lang=go1.17",
-                "-std",
-                "-complete",
-                "-buildid",
-                "-QS_mbbGLV7ARFJAJVEe/-QS_mbbGLV7ARFJAJVEe",
-                "-c=4",
-                "-shared",
-                "-nolocalimports",
-                "-importcfg",
-                "/var/folders/y8/kmfy7f8s5bb5qfsp0z8h7j5m0000gq/T/go-build2554020064/b001/importcfg",
-                "-pack",
-                "/Users/xhd2015/Projects/xhd2015/go/src/cmd/test/main.go",
-            ],
-            "env": {
-                "GOROOT": "../..",
-                "PATH": "../../bin:"
-            }
-        },
-        {
-            "name": "Connect localhost:2345",
-            "type": "go",
-            "request": "attach",
-            "mode": "remote",
-            "remotePath": "${workspaceFolder}",
-            "port": 2345,
-            "host": "127.0.0.1"
-        },
-        {
-            "name": "Launch compile",
-            "type": "go",
-            "request": "launch",
-            "mode": "auto",
-            "program": "./compile"
-        },
-        {
-            // /Users/xhd2015/Projects/xhd2015/go/src/cmd/test/compile-devel -o /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build3725082031/b001/_pkg_.a -trimpath /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build3725082031/b001=> -p main -std -complete -buildid aIR086T_zX3PBa9ztSMz/aIR086T_zX3PBa9ztSMz -goversion go1.19.6 -c=4 -nolocalimports -importcfg /var/folders/kz/g6tsh_b11jjf6flhfrqn_jnr0000gp/T/go-build3725082031/b001/importcfg -pack /Users/xhd2015/installed/go1.19/src/test/main.go
-        }
+    "name": "Launch test/compile-devel",
+    "type": "go",
+    "request": "launch",
+    "mode": "exec",
+    "program": "/Users/xhd2015/Projects/xhd2015/go/src/cmd/test/compile-devel",
+    "cwd": "test",
+    "args": [
+        "-o",
+        "/var/folders/y8/kmfy7f8s5bb5qfsp0z8h7j5m0000gq/T/go-build121489759/b001/_pkg_.a",
+        "-trimpath",
+        "/var/folders/y8/kmfy7f8s5bb5qfsp0z8h7j5m0000gq/T/go-build121489759/b001=>",
+        "-p",
+        "main",
+        "-lang=go1.17",
+        "-std",
+        "-complete",
+        "-buildid",
+        "-QS_mbbGLV7ARFJAJVEe/-QS_mbbGLV7ARFJAJVEe",
+        "-c=4",
+        "-shared",
+        "-nolocalimports",
+        "-importcfg",
+        "/var/folders/y8/kmfy7f8s5bb5qfsp0z8h7j5m0000gq/T/go-build121489759/b001/importcfg",
+        "-pack",
+        "/Users/xhd2015/Projects/xhd2015/go/src/cmd/test/main.go",
+    ],
+    "env": {
+        "GOROOT": "../..",
+        "PATH": "../../bin:"
+    }
+}
     ]
 }

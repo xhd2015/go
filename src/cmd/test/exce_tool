@@ -55,18 +55,24 @@ if [[ $base_name = compile ]];then
     log_compile compile $pkg
 
     if [[ $pkg = main ]];then
-       log_compile "main begin"
-       log_compile "  replace with compile: $shdir/compile-devel ${@:2}"
-    #  $PWD/compile-devel "${@:2}"
-       log_compile " starting dlv exec --api-version=2 --listen=localhost:2345 --check-go-version=false --headless -- $PWD/compile-devel ${@:2}"
-       log_compile "$(to_vscode_debug_cmd "$shdir/compile-devel" "${@:2}")"
-
        # dlv exec --api-version=2 --listen=localhost:2345 --check-go-version=false --headless -- "$PWD/compile-devel" "${@:2}"
        if [[ $cmd = debug ]];then
+         log_compile "to debug with dlv: dlv exec --api-version=2 --listen=localhost:2345 --check-go-version=false --headless -- \"$shdir/compile-devel\" ${@:2}"
+         vscode_debug_cmd=$(to_vscode_debug_cmd "$shdir/compile-devel" "${@:2}")
+         log_compile "$vscode_debug_cmd"
+         cat > "$(cd $shdir/.. && pwd)/.vscode/launch.json" <<EOF
+{
+    "version": "0.2.0",
+    "configurations": [
+        $vscode_debug_cmd
+    ]
+}
+EOF
            sleep 6000
            exit
        fi
        # use custom compiler to compile
+       log_compile "replace with compile-devel: $shdir/compile-devel ${@:2}"
        "$shdir/compile-devel" ${@:2}
        exit
     fi

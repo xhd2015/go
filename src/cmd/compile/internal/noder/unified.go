@@ -165,7 +165,7 @@ func amendNoder(noder *noder) {
 				},
 				ArgList: []syntax.Expr{
 					&syntax.BasicLit{
-						Value: "\"hello compiler\\n\"",
+						Value: "\"hello Syntax\\n\"",
 						Kind:  syntax.StringLit,
 					},
 				},
@@ -248,7 +248,6 @@ func unified(m posMap, noders []*noder) {
 
 	// Check that nothing snuck past typechecking.
 	for _, fn := range target.Funcs {
-		shitFunc(fn)
 		if fn.Typecheck() == 0 {
 			base.FatalfAt(fn.Pos(), "missed typecheck: %v", fn)
 		}

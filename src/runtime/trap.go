@@ -20,16 +20,94 @@ import (
 //	    myAction()
 //	}
 
+// other interesting things:
+//  iterate all functions
+
+func TestModuleDataGetType_Requires_Xgo() (start uintptr, end uintptr) {
+	for p := &firstmoduledata; p != nil; p = p.next {
+		return p.types, p.etypes
+	}
+	throw("shit")
+	return 0, 0
+}
+
+func TestModuleDataFindTypeLink_Requires_Xgo(offset int32) int {
+	for p := &firstmoduledata; p != nil; p = p.next {
+		for i, tl := range p.typelinks {
+			if offset == tl {
+				return i
+			}
+		}
+	}
+	return -1
+}
+func TestModuleData_Requires_Xgo() {
+	for p := &firstmoduledata; p != nil; p = p.next {
+		println("module:", p.modulename)
+		println("hasmain:", p.hasmain)
+		printFuncNames(p.funcnametab)
+		printPTab(p, p.ptab)
+		printHeader(p.pcHeader)
+		printFTab(p, p.ftab)
+	}
+}
+func printHeader(p *pcHeader) {
+	println("magic:", p.magic) // 0xfffffff1, i.e. 4294967281
+	println("nfunc:", p.nfunc)
+	println("nfiles:", p.nfiles)
+}
+
+func printPTab(m *moduledata, ptab []ptabEntry) {
+	println("ptab:", len(ptab))
+	for i, p := range ptab {
+		println("ptab:", i, m.funcName(int32(p.name)))
+	}
+}
+func printFuncNames(funcnametab []byte) {
+	n := len(funcnametab)
+	last := -1
+	num := 0
+	for i := 0; i < n; i++ {
+		if funcnametab[i] == '\x00' {
+			// println(string(funcnametab[last+1 : i]))
+			last = i
+			num++
+		}
+	}
+	_ = last
+	println("funcnametab len:", num)
+}
+func printFTab(m *moduledata, ftab []functab) {
+	println("ftab len:", len(ftab))
+	for i, f := range ftab {
+		// funcoff -> offset to function info, like name
+		// pc,_ := m.textOff(uintptr(f.entryoff))
+		pc := m.textAddr(f.entryoff)
+		fnInfo := funcInfo{(*_func)(unsafe.Pointer(&m.pclntable[f.funcoff])), m}
+		print("ftab:", i)
+		printsp()
+		printhex(uint64(pc))
+		printsp()
+		println(m.funcName(fnInfo.nameOff))
+	}
+}
 func Getg_GoInspectExported() *g { return getg() }
 
 // use getg().m.curg instead of getg()
 // see: https://github.com/golang/go/blob/master/src/runtime/HACKING.md
 func Getcurg_GoInspectExported() *g { return getg().m.curg }
 
+func Getg_Requires_Xgo() unsafe.Pointer { return unsafe.Pointer(getg()) }
+
+// use getg().m.curg instead of getg()
+// see: https://github.com/golang/go/blob/master/src/runtime/HACKING.md
+func Getcurg_Requires_Xgo() unsafe.Pointer { return unsafe.Pointer(getg().m.curg) }
+
 // exported so other func can call it
 var TrapImpl_Requires_Xgo func(funcName string, recv interface{}, args []interface{}, results []interface{}) (func(), bool)
 
-func __x_trap(recv interface{}, args []interface{}, results []interface{}) (func(), bool) {
+// this is so elegant that you cannot ignore it
+func __xgo_trap(recv interface{}, args []interface{}, results []interface{}) (func(), bool) {
 	if TrapImpl_Requires_Xgo == nil {
 		return nil, false
 	}
@@ -38,6 +116,67 @@ func __x_trap(recv interface{}, args []interface{}, results []interface{}) (func
 	// TODO: what about inlined func?
 	funcName := fn.datap.funcName(fn.nameOff)
 	return TrapImpl_Requires_Xgo(funcName, recv, args, results)
+}
+
+type __xgo_func_info struct {
+	fn       interface{}
+	recvName string
+	argNames []string
+	resNames []string
+}
+
+var funcs []*__xgo_func_info
+
+func __xgo_register_func(fn interface{}, recvName string, argNames []string, resNames []string) {
+	// type intf struct {
+	// 	_  uintptr
+	// 	pc *uintptr
+	// }
+	// v := (*intf)(unsafe.Pointer(&fn))
+	// fnVal := findfunc(*v.pc)
+	// funcName := fnVal.datap.funcName(fnVal.nameOff)
+	// println("register func:", funcName)
+	funcs = append(funcs, &__xgo_func_info{
+		fn:       fn,
+		recvName: recvName,
+		argNames: argNames,
+		resNames: resNames,
+	})
+}
+func RegisterFunc_Requires_Xgo(fn interface{}, recvName string, argNames []string, resNames []string) {
+	__xgo_register_func(fn, recvName, argNames, resNames)
+}
+
+func FindFunc_Xgo(name string) (fn interface{}, recvName string, argNames []string, resNames []string) {
+	for _, fn := range funcs {
+		type intf struct {
+			_  uintptr
+			pc *uintptr
+		}
+		v := (*intf)(unsafe.Pointer(&fn.fn))
+		fnVal := findfunc(*v.pc)
+		funcName := fnVal.datap.funcName(fnVal.nameOff)
+		if funcName == name {
+			return fn.fn, fn.recvName, fn.argNames, fn.resNames
+		}
+	}
+	return nil, "", nil, nil
+}
+
+// func GetFuncs_Requires_Xgo() []interface{} {
+// 	return funcs
+// }
+// func GetMethods_Requires_Xgo() []interface{} {
+// 	return methods
+// }
+
+func Getcallerpc() uintptr {
+	return getcallerpc()
+}
+func GetcallerFuncPC() uintptr {
+	pc := getcallerpc()
+	fn := findfunc(pc)
+	return fn.entry()
 }
 
 // all are ptrs

@@ -10,9 +10,9 @@
     "cwd": "test",
     "args": [
         "-o",
-        "/var/folders/y8/kmfy7f8s5bb5qfsp0z8h7j5m0000gq/T/go-build1507182109/b046/_pkg_.a",
+        "/var/folders/y8/kmfy7f8s5bb5qfsp0z8h7j5m0000gq/T/go-build3743819094/b046/_pkg_.a",
         "-trimpath",
-        "/var/folders/y8/kmfy7f8s5bb5qfsp0z8h7j5m0000gq/T/go-build1507182109/b046=>",
+        "/var/folders/y8/kmfy7f8s5bb5qfsp0z8h7j5m0000gq/T/go-build3743819094/b046=>",
         "-p",
         "github.com/xhd2015/go/cmd/test/pkg",
         "-lang=go1.17",
@@ -23,13 +23,15 @@
         "-shared",
         "-nolocalimports",
         "-importcfg",
-        "/var/folders/y8/kmfy7f8s5bb5qfsp0z8h7j5m0000gq/T/go-build1507182109/b046/importcfg",
+        "/var/folders/y8/kmfy7f8s5bb5qfsp0z8h7j5m0000gq/T/go-build3743819094/b046/importcfg",
         "-pack",
         "/Users/xhd2015/Projects/xhd2015/go/src/cmd/test/pkg/pkg.go",
     ],
     "env": {
-        "COMPILER_ALLOW_REWRITE":"true",
-        "COMPILER_DEBUG_IR_REWRITE_FUNC":"testArgs",
+        "COMPILER_ALLOW_IR_REWRITE":"true",
+        "COMPILER_ALLOW_SYNTAX_REWRITE":"true",
+        "COMPILER_DEBUG_IR_REWRITE_FUNC":"",
+        "COMPILER_DEBUG_IR_DUMP_FUNCS":"false",
         "GOROOT": "../..",
         "PATH": "../../bin:${env:PATH}"
     }

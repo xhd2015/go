@@ -976,6 +976,13 @@ type _func struct {
 	// funcdata [nfuncdata]uint32
 }
 
+func _() {
+	var a _func
+	b := a.funcInfo()
+	c := b.srcFunc()
+	c.name()
+}
+
 // Pseudo-Func that is returned for PCs that occur in inlined code.
 // A *Func can be either a *_func or a *funcinl, and they are distinguished
 // by the first uintptr.

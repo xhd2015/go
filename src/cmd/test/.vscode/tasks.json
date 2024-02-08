@@ -5,10 +5,43 @@
 			"label": "go: build test_trap.bin",
 			"type": "shell",
 			"command": "bash",
-			//  "bash -xc \"export GOROOT=/Users/xhd2015/Projects/xhd2015/go;export PATH=\\$GOROOT/bin:\\$PATH; ./debug.sh \\$@\"",
 			"args": [
 				"-c",
-				"./with-go-devel ./debug.sh build -v -gcflags \"all=-N -l\" -o ./test_trap.bin ./test/test_trap",
+				"COMPILER_ALLOW_SYNTAX_REWRITE=false COMPILER_ALLOW_IR_REWRITE=true ./debug.sh build -v -gcflags \"all=-N -l\" -o ./test_trap.bin ./test/test_trap",
+			],
+			"problemMatcher": [
+				"$go"
+			]
+		},
+		{
+			"label": "go: build test_trap.bin -a",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"-c",
+				"COMPILER_ALLOW_SYNTAX_REWRITE=false COMPILER_ALLOW_IR_REWRITE=true ./debug.sh build -v -gcflags \"all=-N -l\" -a -o ./test_trap.bin ./test/test_trap",
+			],
+			"problemMatcher": [
+				"$go"
+			]
+		},
+		{
+			"label": "go: build compiler",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"-c",
+				"./debug.sh build-compiler",
+			],
+			"problemMatcher": [
+				"$go"
+			]
+		},
+		{
+			"label": "go: build compiler and -a test_trap.bin",
+			"dependsOn": [
+				"go: build compiler",
+				"go: build test_trap.bin -a"
 			],
 			"problemMatcher": [
 				"$go"

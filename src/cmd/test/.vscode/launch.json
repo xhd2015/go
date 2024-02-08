@@ -12,9 +12,47 @@
             "program": "test_trap.bin",
             "env": {
                 "GOROOT": "/Users/xhd2015/Projects/xhd2015/go",
-                "PATH": "/Users/xhd2015/Projects/xhd2015/go/bin:${env:PATH}"
+                "PATH": "/Users/xhd2015/Projects/xhd2015/go/bin:${env:PATH}",
+                // "GOSSAFUNC": "main.main"
             },
             "preLaunchTask": "go: build test_trap.bin"
-        }
+        },
+        // {
+        //     "name": "Launch test_trap -a(rebuild runtime)",
+        //     "type": "go",
+        //     "request": "launch",
+        //     "mode": "exec",
+        //     "program": "test_trap.bin",
+        //     "env": {
+        //         "GOROOT": "/Users/xhd2015/Projects/xhd2015/go",
+        //         "PATH": "/Users/xhd2015/Projects/xhd2015/go/bin:${env:PATH}"
+        //     },
+        //     "preLaunchTask": "go: build test_trap.bin -a"
+        // },
+        {
+            "name": "Launch test_trap -a(rebuild compiler and runtime)",
+            "type": "go",
+            "request": "launch",
+            "mode": "exec",
+            "program": "test_trap.bin",
+            "env": {
+                "GOROOT": "/Users/xhd2015/Projects/xhd2015/go",
+                "PATH": "/Users/xhd2015/Projects/xhd2015/go/bin:${env:PATH}"
+            },
+            "preLaunchTask": "go: build compiler and -a test_trap.bin"
+        },
+        {
+            "name": "Dump IR",
+            // "type": "go",
+            "request": "launch",
+            // "mode": "exec",
+            // "program": "test_trap.bin",
+            "env": {
+                "GOROOT": "/Users/xhd2015/Projects/xhd2015/go",
+                "PATH": "/Users/xhd2015/Projects/xhd2015/go/bin:${env:PATH}",
+                "COMPILER_DEBUG_IR_DUMP_FUNCS": ""
+            },
+            "preLaunchTask": "go: build test_trap.bin"
+        },
     ]
 }

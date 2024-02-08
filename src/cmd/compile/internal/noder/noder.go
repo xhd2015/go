@@ -5,9 +5,11 @@
 package noder
 
 import (
+	"cmd/compile/internal/__xgo_plugin/__xgo_syntax"
 	"errors"
 	"fmt"
 	"internal/buildcfg"
+	"io"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -79,6 +81,24 @@ func LoadPackage(filenames []string) {
 		lines += p.file.EOF.Line()
 	}
 	base.Timer.AddEvent(int64(lines), "lines")
+
+	// auto gen
+	files := make([]*syntax.File, 0, len(noders))
+	for _, n := range noders {
+		files = append(files, n.file)
+	}
+	__xgo_syntax.AfterFilesParsed(files, func(name string, r io.Reader) {
+		p := &noder{}
+		fbase := syntax.NewFileBase(name)
+		file, err := syntax.Parse(fbase, r, nil, p.pragma, syntax.CheckBranches) // errors are tracked via p.error
+		if err != nil {
+			e := err.(syntax.Error)
+			base.ErrorfAt(m.makeXPos(e.Pos), 0, "%s", e.Msg)
+			return
+		}
+		p.file = file
+		noders = append(noders, p)
+	})
 
 	unified(m, noders)
 }

@@ -38,8 +38,10 @@ done
 cat <<EOF
     ],
     "env": {
-        "COMPILER_ALLOW_REWRITE":"true",
+        "COMPILER_ALLOW_IR_REWRITE":"true",
+        "COMPILER_ALLOW_SYNTAX_REWRITE":"true",
         "COMPILER_DEBUG_IR_REWRITE_FUNC":"$COMPILER_DEBUG_IR_REWRITE_FUNC",
+        "COMPILER_DEBUG_IR_DUMP_FUNCS":"$COMPILER_DEBUG_IR_DUMP_FUNCS",
         "GOROOT": "../..",
         "PATH": "../../bin:\${env:PATH}"
     }
@@ -82,7 +84,7 @@ EOF
        fi
        # use custom compiler to compile
        log_compile "replace with compile-devel: $shdir/compile-devel ${@:2}"
-       COMPILER_ALLOW_REWRITE=true "$shdir/compile-devel" ${@:2}
+       COMPILER_ALLOW_SYNTAX_REWRITE=${COMPILER_ALLOW_SYNTAX_REWRITE:-true} COMPILER_ALLOW_IR_REWRITE=${COMPILER_ALLOW_IR_REWRITE:-true} "$shdir/compile-devel" ${@:2}
        exit
     fi
     

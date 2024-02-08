@@ -54,7 +54,6 @@ func printhex(uint64)
 func printuint(uint64)
 func printcomplex(complex128)
 func printstring(string)
-func __x_trap(interface{}, []interface{}, []interface{}) (func(), bool)
 func printpointer(any)
 func printuintptr(uintptr)
 func printiface(any)
@@ -285,3 +284,7 @@ var armHasVFPv4 bool
 var arm64HasATOMICS bool
 
 func asanregisterglobals(unsafe.Pointer, uintptr)
+
+// xgo
+func __xgo_trap(interface{}, []interface{}, []interface{}) (func(), bool)
+func __xgo_register_func(fn interface{}, recvName string, argNames []string, resNames []string)

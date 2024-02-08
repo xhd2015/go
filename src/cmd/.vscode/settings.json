@@ -5,7 +5,7 @@
             // "GOROOT": "/Users/xhd2015/installed/go1.21.6",
             // "PATH": "/Users/xhd2015/installed/go1.21.6/bin",
             "GOROOT": "/Users/xhd2015/Projects/xhd2015/go",
-            "PATH": "/Users/xhd2015/Projects/xhd2015/go/bin"
+            "PATH": "/Users/xhd2015/Projects/xhd2015/go/bin:${env:PATH}"
         },
         "build.buildFlags": [
             // "-mod=vendor"

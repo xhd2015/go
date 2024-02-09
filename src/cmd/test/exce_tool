@@ -65,7 +65,7 @@ if [[ $base_name = compile ]];then
        trap 'log_compile "runtime end"; cp "$3" "$shdir"/runtime.a ' EXIT
     fi
 
-    if [[ $pkg = main || $pkg = github.com/xhd2015/go/cmd/test/pkg ]];then
+    if [[ $pkg = main || $pkg = github.com/xhd2015/go/cmd/test/pkg  || $pkg = github.com/xhd2015/go/cmd/test/* ]];then
        # dlv exec --api-version=2 --listen=localhost:2345 --check-go-version=false --headless -- "$PWD/compile-devel" "${@:2}"
        if [[ $cmd = debug ]];then
          log_compile "to debug with dlv: dlv exec --api-version=2 --listen=localhost:2345 --check-go-version=false --headless -- \"$shdir/compile-devel\" ${@:2}"

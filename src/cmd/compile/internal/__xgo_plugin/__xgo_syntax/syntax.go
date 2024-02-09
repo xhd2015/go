@@ -18,11 +18,12 @@ func GetFiles() []*syntax.File {
 	return files
 }
 
-func AfterFilesParsed(files []*syntax.File, addFile func(name string, r io.Reader)) {
-	if len(files) == 0 {
+func AfterFilesParsed(fileList []*syntax.File, addFile func(name string, r io.Reader)) {
+	if len(fileList) == 0 {
 		return
 	}
-	pkgName := files[0].PkgName.Value
+	files = fileList
+	pkgName := fileList[0].PkgName.Value
 	if pkgName == "runtime" {
 		return
 	}
@@ -34,7 +35,7 @@ func AfterFilesParsed(files []*syntax.File, addFile func(name string, r io.Reade
 	// I feel the second is more proper as importcfg is an extra layer of
 	// complexity, and runtime can be compiled or cached, we cannot locate
 	// where its _pkg_.a is.
-	body := getRegFuncsBody(files)
+	body := getRegFuncsBody(fileList)
 	autoGen :=
 		"package " + pkgName + "\n" +
 			"func __xgo_register_funcs(__xgo_reg_func func(fn interface{}, recvName string, argNames []string, resNames []string)){\n" +

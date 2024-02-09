@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"reflect"
-	"runtime"
 
+	"github.com/xhd2015/go/cmd/test/core/functab"
 	"github.com/xhd2015/go/cmd/test/pkg"
 )
 
@@ -45,18 +45,18 @@ func init() {
 
 func main() {
 	// call registered func
-	fn, _, _, _ := runtime.FindFunc_Xgo("main.a")
+	fn := functab.GetFunc("main.a")
 	if fn == nil {
 		panic(fmt.Errorf("func main.a not found"))
 	}
-	fnv := reflect.ValueOf(fn)
+	fnv := reflect.ValueOf(fn.Func)
 	fnv.Call(nil)
 
-	fn, recvName, argNames, resNames := runtime.FindFunc_Xgo("main.b")
-	if fn == nil {
+	fnb := functab.GetFunc("main.b")
+	if fnb == nil {
 		panic(fmt.Errorf("func main.b not found"))
 	}
-	fmt.Printf("main.b recvName=%v,argNames=%v,resNames=%v\n", recvName, argNames, resNames)
+	fmt.Printf("main.b recvName=%v,argNames=%v,resNames=%v\n", fnb.RecvName, fnb.ArgNames, fnb.ResNames)
 	res := testArgs("a")
 	fmt.Printf("res: %v\n", res)
 }

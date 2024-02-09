@@ -27,7 +27,8 @@ while [[ $# -gt 0 ]];do
       ;;
       --help|-h)
       cat <<'EOF'
-usage: debug.sh <CMD> [OPTIONS]
+Usage: debug.sh <CMD> [OPTIONS]
+Available commands: build-compiler,build,debug,gen-runtime-type
 Options:
    --help,-h       help
    --verbose,-v    show verbose log
@@ -100,6 +101,13 @@ case "$cmd" in
         PATH=$goroot/bin:$PATH GOROOT=$goroot go build -gcflags="all=-N -l" -o ./test/compile-devel ./compile
       )
     ;;
+    gen-runtime-type)
+    (
+      cd ..
+      ./test/with-go-devel.sh go generate ./compile/internal/typecheck
+    )
+     
+     ;;
     *)
       echo "unknow command: $cmd" >&2
       exit 1

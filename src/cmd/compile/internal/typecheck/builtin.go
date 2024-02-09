@@ -232,12 +232,14 @@ var runtimeDecls = [...]struct {
 	{"armHasVFPv4", varTag, 6},
 	{"arm64HasATOMICS", varTag, 6},
 	{"asanregisterglobals", funcTag, 121},
-	{"__xgo_trap", funcTag, 154},
-	{"__xgo_register_func", funcTag, 155},
+	{"__xgo_getcurg", funcTag, 153},
+	{"__xgo_trap", funcTag, 155},
+	{"__xgo_register_func", funcTag, 156},
+	{"__xgo_for_each_func", funcTag, 158},
 }
 
 func runtimeTypes() []*types.Type {
-	var typs [156]*types.Type
+	var typs [159]*types.Type
 	typs[0] = types.ByteType
 	typs[1] = types.NewPtr(typs[0])
 	typs[2] = types.Types[types.TANY]
@@ -391,9 +393,12 @@ func runtimeTypes() []*types.Type {
 	typs[150] = newSig(params(typs[28], typs[28], typs[17]), nil)
 	typs[151] = types.NewArray(typs[0], 16)
 	typs[152] = newSig(params(typs[7], typs[60], typs[151], typs[28], typs[15], typs[64], typs[64]), params(typs[60]))
-	typs[153] = types.NewSlice(typs[10])
-	typs[154] = newSig(params(typs[10], typs[153], typs[153]), params(typs[9], typs[6]))
-	typs[155] = newSig(params(typs[10], typs[28], typs[38], typs[38]), nil)
+	typs[153] = newSig(nil, params(typs[7]))
+	typs[154] = types.NewSlice(typs[10])
+	typs[155] = newSig(params(typs[10], typs[154], typs[154]), params(typs[9], typs[6]))
+	typs[156] = newSig(params(typs[10], typs[28], typs[38], typs[38]), nil)
+	typs[157] = newSig(params(typs[28], typs[5], typs[10], typs[28], typs[38], typs[38]), nil)
+	typs[158] = newSig(params(typs[157]), nil)
 	return typs[:]
 }
 

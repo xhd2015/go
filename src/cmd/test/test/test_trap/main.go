@@ -2,13 +2,15 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 	"runtime"
 	"unsafe"
+
+	"github.com/xhd2015/go/cmd/test/core/functab"
 
 	"github.com/xhd2015/go/cmd/test/core/trace"
 	_ "github.com/xhd2015/go/cmd/test/core/trap/trap_impl"
 	"github.com/xhd2015/go/cmd/test/pkg"
-	"github.com/xhd2015/go/cmd/test/test/test_trap/mock"
 )
 
 func init() {
@@ -26,15 +28,46 @@ func init() {
 
 // can break some
 func regTest() {
+
 }
 
 func main() {
-	mock.CheckSSA()
-	// v := reflect.ValueOf(0)
-	// v.Call()
-	runtime.TestModuleData_Requires_Xgo()
-	res := testArgs("a")
-	fmt.Printf("res: %v\n", res)
+	// testFindFunc()
+	// mock.CheckSSA()
+	// runtime.TestModuleData_Requires_Xgo()
+	// res := testArgs("a")
+	// fmt.Printf("res: %v\n", res)
+	A()
+	B()
+	C()
+}
+
+func A() {
+	fmt.Printf("A\n")
+}
+
+func B() {
+	fmt.Printf("B\n")
+	C()
+}
+func C() {
+	fmt.Printf("C\n")
+}
+
+func testFindFunc() {
+	// call registered func
+	fn := functab.GetFunc("main.a")
+	if fn == nil {
+		panic(fmt.Errorf("func main.a not found"))
+	}
+	fnv := reflect.ValueOf(fn.Func)
+	fnv.Call(nil)
+
+	fnb := functab.GetFunc("main.b")
+	if fnb == nil {
+		panic(fmt.Errorf("func main.b not found"))
+	}
+	fmt.Printf("main.b recvName=%v,argNames=%v,resNames=%v\n", fnb.RecvName, fnb.ArgNames, fnb.ResNames)
 }
 
 // GOSSAFUNC=main.checkSSA ./with-go-devel.sh go build -gcflags="all=-N -l" ./test/test_trap
@@ -73,4 +106,11 @@ type num int
 func (c num) add(b int) {
 	fmt.Printf("%d+%d=%d\n", c, b, int(c)+b)
 	pkg.Hello("pkg")
+}
+
+func a() {
+	fmt.Printf("main.a called\n")
+}
+func b(name string) (age int, err error) {
+	return
 }

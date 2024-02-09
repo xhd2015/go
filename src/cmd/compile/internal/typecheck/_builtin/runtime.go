@@ -286,5 +286,7 @@ var arm64HasATOMICS bool
 func asanregisterglobals(unsafe.Pointer, uintptr)
 
 // xgo
+func __xgo_getcurg() unsafe.Pointer
 func __xgo_trap(interface{}, []interface{}, []interface{}) (func(), bool)
 func __xgo_register_func(fn interface{}, recvName string, argNames []string, resNames []string)
+func __xgo_for_each_func(f func(funcName string, pc uintptr, fn interface{}, recvName string, argNames []string, resNames []string))

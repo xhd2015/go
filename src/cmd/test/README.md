@@ -141,7 +141,20 @@ Example:
 1.Edit [../compile/internal/typecheck/_builtin/runtime.go](../compile/internal/typecheck/_builtin/runtime.go) to add function declaration,
 2.Execute go generate
 ```sh
+./debug.sh gen-runtime-type
+# or
 ./with-go-devel.sh go generate ../compile/internal/typecheck
+```
+
+Supported flags:
+- `-stdout`  output to stdout instead of file
+- `-nofmt` skip formatting
+
+See [../compile/internal/typecheck/mkbuiltin.go](../compile/internal/typecheck/mkbuiltin.go)
+
+Also:
+```sh
+(cd ../compile/internal/typecheck; ../../../test/with-go-devel.sh go run ./mkbuiltin.go -stdout -nofmt)
 ```
 
 ## Check runtime symbols

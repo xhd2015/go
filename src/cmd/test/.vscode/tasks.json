@@ -39,13 +39,18 @@
 		},
 		{
 			"label": "go: build compiler and -a test_trap.bin",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"-c",
+				"COMPILER_ALLOW_SYNTAX_REWRITE=false COMPILER_ALLOW_IR_REWRITE=true ./debug.sh build -v -gcflags \"all=-N -l\" -a -o ./test_trap.bin ./test/test_trap",
+			],
 			"dependsOn": [
 				"go: build compiler",
-				"go: build test_trap.bin -a"
 			],
 			"problemMatcher": [
 				"$go"
 			]
-		}
+		},
 	]
 }

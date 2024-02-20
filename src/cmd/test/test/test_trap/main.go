@@ -7,23 +7,15 @@ import (
 	"unsafe"
 
 	"github.com/xhd2015/go/cmd/test/core/functab"
+	"github.com/xhd2015/go/cmd/test/core/trap"
 
 	"github.com/xhd2015/go/cmd/test/core/trace"
-	_ "github.com/xhd2015/go/cmd/test/core/trap/trap_impl"
 	"github.com/xhd2015/go/cmd/test/pkg"
 )
 
 func init() {
+	trap.Use()
 	trace.Use()
-
-	// trap.AddInterceptor(trap.Interceptor{
-	// 	Pre: func(ctx context.Context, f *trap.FuncInfo, args *trap.FuncArgs) (data interface{}, err error) {
-	// 		if strings.Contains(f.FullName, "testReflect") {
-	// 			return nil, nil
-	// 		}
-	// 		return nil, nil
-	// 	},
-	// })
 }
 
 // can break some

@@ -65,9 +65,19 @@ if [[ $base_name = compile ]];then
        trap 'log_compile "runtime end"; cp "$3" "$shdir"/runtime.a ' EXIT
     fi
 
-    if [[ $pkg = main || $pkg = github.com/xhd2015/go/cmd/test/pkg  || $pkg = github.com/xhd2015/go/cmd/test/* ]];then
-       # dlv exec --api-version=2 --listen=localhost:2345 --check-go-version=false --headless -- "$PWD/compile-devel" "${@:2}"
+    if [[ $pkg = main || $pkg = github.com/xhd2015/go/cmd/test/pkg  || $pkg = github.com/xhd2015/go/cmd/test/* || $pkg = github.com/xhd2015/xgo* || "%$pkg" = %"$PKG_PREFIX"* ]];then
+       is_debug=false
        if [[ $cmd = debug ]];then
+          if [[ -n $DEBUG_PKG ]];then
+              if [[ $pkg = $DEBUG_PKG ]];then
+                  is_debug=true
+              fi
+          else
+            is_debug=true
+          fi
+       fi
+       # dlv exec --api-version=2 --listen=localhost:2345 --check-go-version=false --headless -- "$PWD/compile-devel" "${@:2}"
+       if [[ $is_debug = true ]];then
          log_compile "to debug with dlv: dlv exec --api-version=2 --listen=localhost:2345 --check-go-version=false --headless -- \"$shdir/compile-devel\" ${@:2}"
          vscode_debug_cmd=$(to_vscode_debug_cmd "$shdir/compile-devel" "${@:2}")
          log_compile "$vscode_debug_cmd"

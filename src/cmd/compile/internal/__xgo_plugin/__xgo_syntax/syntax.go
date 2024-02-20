@@ -27,6 +27,9 @@ func AfterFilesParsed(fileList []*syntax.File, addFile func(name string, r io.Re
 	if pkgName == "runtime" {
 		return
 	}
+	// if true {
+	// 	return
+	// }
 	// cannot directly import the runtime package
 	// but we can first:
 	//  1.modify the importcfg

@@ -60,6 +60,7 @@ func main() {
 	fmt.Println(fnInt3(1, 2, 3))
 	fmt.Println(fnSlice([]int{1, 2, 3}))
 	fmt.Println(fnInterface("test"))
+	fmt.Println(fnNamedEmptyInterface(MyEmptyInterface(1)))
 	fmt.Println(fnStruct(struct {
 		a int
 		b int
@@ -73,6 +74,8 @@ func main() {
 
 	ch := make(chan int)
 	fmt.Println(fnChan(ch))
+	chMyStruct := make(chan MyStruct)
+	fmt.Println(fnChanMyStruct(chMyStruct))
 	fmt.Println(fnChanSend(ch))
 	fmt.Println(fnChanRecv(ch))
 
@@ -126,6 +129,12 @@ func fnInterface(a interface{}) int {
 	return 0
 }
 
+type MyEmptyInterface interface{}
+
+func fnNamedEmptyInterface(a MyEmptyInterface) int {
+	return 0
+}
+
 func fnStruct(c struct {
 	a int
 	b int
@@ -151,6 +160,10 @@ func fnComplex128(x complex128) complex128 {
 }
 
 func fnChan(x chan int) chan int {
+	return x
+}
+
+func fnChanMyStruct(x chan MyStruct) chan MyStruct {
 	return x
 }
 

@@ -291,6 +291,11 @@ func collectArgs(f funcInfo, argp unsafe.Pointer, pc uintptr) []interface{} {
 			}
 		}
 
+		if true {
+			// always return uint64, let caller to convert
+			return x
+		}
+
 		// Convert to appropriate type based on size
 		switch sz {
 		case 1:

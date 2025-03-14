@@ -16,6 +16,6 @@ function build_go {
 
 cd "$project_root/test/trap"
 
-./with-go-devel.sh go build -o __debug_bin_demo -gcflags="all=-N -l" ./
+# ./with-go-devel.sh go build -o __debug_bin_demo -gcflags="all=-N -l" ./
 
-./with-go-devel.sh ./__debug_bin_demo
+./with-go-devel.sh go test -gcflags="all=-N -l" -v "$@"

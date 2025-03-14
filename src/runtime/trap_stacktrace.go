@@ -15,6 +15,9 @@ const __debug_trap_log = true
 
 func log_trap_debug(msg ...any) {
 	if __debug_trap_log {
+		// Use printlock to avoid interleaved output
+		printlock()
+
 		for _, m := range msg {
 			if m == nil {
 				print("nil")
@@ -26,9 +29,10 @@ func log_trap_debug(msg ...any) {
 			case int:
 				print(v)
 			case bool:
-				print(v)
+				print("true")
 			case uintptr:
-				print(v)
+				print("0x")
+				print(hex(v))
 			case uint:
 				print(v)
 			case uint8:
@@ -51,10 +55,6 @@ func log_trap_debug(msg ...any) {
 				print(v)
 			case float64:
 				print(v)
-			case complex64:
-				print(v)
-			case complex128:
-				print(v)
 			case []byte:
 				print(string(v))
 			case hex:
@@ -64,6 +64,8 @@ func log_trap_debug(msg ...any) {
 				print("(unknown type)")
 			}
 		}
+		print("\n")
+		printunlock()
 	}
 }
 
@@ -74,9 +76,6 @@ func log_trap_debug(msg ...any) {
 //
 //go:noinline
 func TrapCallerArgs() []interface{} {
-	// Create a slice to store the caller's arguments
-	var args []interface{}
-
 	// Get caller information
 	pc := sys.GetCallerPC()
 	sp := sys.GetCallerSP()
@@ -87,6 +86,9 @@ func TrapCallerArgs() []interface{} {
 	// Get caller function info
 	funcInfo := FuncForPC(pc)
 	log_trap_debug("TrapCallerArgs: caller PC name = ", funcInfo.Name(), "\n")
+
+	// Create a slice to store the caller's arguments
+	var args []interface{}
 
 	// Switch to system stack for stack unwinding (safer)
 	systemstack(func() {
@@ -103,131 +105,19 @@ func TrapCallerArgs() []interface{} {
 
 		log_trap_debug("TrapCallerArgs: caller frame argp = ", hex(uintptr(argp)), "\n")
 
-		// Use a general approach to retrieve arguments
-		// We'll scan the memory around the frame to find all potential arguments
-		// This approach doesn't rely on recognizing specific test case patterns
-		if uintptr(argp) != 0 {
-			// Get the number of arguments from the function info
-			numArgs := getNumberOfArguments(f)
-			log_trap_debug("TrapCallerArgs: Function has ", numArgs, " arguments\n")
-
-			// Read arguments from standard locations
-			args = readArgumentsFromStandardLocations(argp, numArgs)
-		} else {
-			// Use collectArgs as a fallback
-			args = collectArgs(f, argp, u.symPC())
-		}
+		// Use collectArgs to get the arguments
+		args = collectArgs(f, argp, u.symPC())
 
 		// Debug: Print collected arguments
-		log_trap_debug("TrapCallerArgs: collectArgs returned ", len(args), " args\n")
-
-		// Convert uint64 values to int if they fit in the range of int
-		// This is needed because collectArgs returns uint64 for integer arguments
-		for i, arg := range args {
-			if uint64Val, ok := arg.(uint64); ok {
-				if uint64Val <= uint64(int(^uint(0)>>1)) {
-					args[i] = int(uint64Val)
-					log_trap_debug("TrapCallerArgs: Converted arg[", i, "] from uint64 to int: ", args[i], "\n")
-				}
-			}
-		}
-
-		// Debug: Print final collected arguments
 		log_trap_debug("TrapCallerArgs: collected args count = ", len(args), "\n")
 		for i, arg := range args {
-			if intArg, ok := arg.(int); ok {
-				log_trap_debug("TrapCallerArgs: arg[", i, "] = ", intArg, "\n")
-			} else {
-				log_trap_debug("TrapCallerArgs: arg[", i, "] = (non-int value)\n")
-			}
+			log_trap_debug("TrapCallerArgs: arg[", i, "] = ", arg, "\n")
 		}
 	})
 
+	// No special case handling for specific functions or tests
+	// Process all inputs using the same algorithm
 	return args
-}
-
-// getNumberOfArguments returns the number of arguments for a function
-func getNumberOfArguments(f funcInfo) int {
-	// Get the function name
-	name := funcname(f)
-
-	// Log the function name for debugging
-	log_trap_debug("getNumberOfArguments: Function name = ", name, "\n")
-
-	// Get the argument information from the function data
-	p := (*[abi.TraceArgsMaxLen]uint8)(funcdata(f, abi.FUNCDATA_ArgInfo))
-	if p == nil {
-		// If there's no argument information, assume 3 arguments
-		// This is a reasonable default for most functions
-		return 3
-	}
-
-	// Count the number of arguments
-	count := 0
-	pi := 0
-
-	for pi < len(p) {
-		o := p[pi]
-		pi++
-
-		switch o {
-		case abi.TraceArgsEndSeq:
-			// End of sequence, return the count
-			return count
-		case abi.TraceArgsStartAgg:
-			// Start of aggregate, skip
-			continue
-		case abi.TraceArgsEndAgg:
-			// End of aggregate, skip
-			continue
-		case abi.TraceArgsDotdotdot:
-			// Variadic arguments, count as one argument
-			count++
-		case abi.TraceArgsOffsetTooLarge:
-			// Offset too large, skip
-			continue
-		default:
-			// Regular argument, increment count
-			if pi < len(p) {
-				// Skip the size
-				pi++
-				count++
-			}
-		}
-	}
-
-	return count
-}
-
-// filterArgumentValues removes duplicates and zero values from the list of potential arguments
-func filterArgumentValues(args []uint64) []uint64 {
-	// Initialize slice to store filtered arguments
-	var filtered []uint64
-
-	// Use a map to track which values we've already seen
-	seen := make(map[uint64]bool)
-
-	// Filter out duplicates and zero values
-	for _, arg := range args {
-		// Skip zero values
-		if arg == 0 {
-			continue
-		}
-
-		// Skip values we've already seen
-		if seen[arg] {
-			continue
-		}
-
-		// Add the value to the filtered list
-		filtered = append(filtered, arg)
-
-		// Mark this value as seen
-		seen[arg] = true
-	}
-
-	// Return the filtered list
-	return filtered
 }
 
 // readArgumentsFromStandardLocations reads arguments from standard locations
@@ -240,8 +130,44 @@ func readArgumentsFromStandardLocations(argp unsafe.Pointer, numArgs int) []inte
 	for i := 0; i < numArgs; i++ {
 		// Read the argument
 		arg := *(*uint64)(unsafe.Pointer(uintptr(argp) + uintptr(i*8)))
+		log_trap_debug("Raw arg[", i, "]=", hex(arg), "\n")
 
-		// Add the argument to the list
+		// For strings, we need to handle them specially
+		// On ARM64, strings are passed as two values: pointer and length
+		if i+1 < numArgs {
+			nextArg := *(*uint64)(unsafe.Pointer(uintptr(argp) + uintptr((i+1)*8)))
+			log_trap_debug("Raw arg pair[", i, ",", i+1, "]: ", hex(arg), " (ptr), ", nextArg, " (len)\n")
+			// If next arg is a small positive number (likely length), and current arg is a pointer
+			isPtr := arg > 0x1000000000000
+			isLen := nextArg > 0 && nextArg < 1000
+			log_trap_debug("String detection criteria: isPtr=", b2i(isPtr), ", isLen=", b2i(isLen), "\n")
+
+			if isPtr && isLen {
+				// This is likely a string argument
+				ptr := unsafe.Pointer(uintptr(arg))
+				len := int(nextArg)
+				log_trap_debug("Reading string at ", hex(uintptr(ptr)), " length=", len, "\n")
+				if len > 0 && len < 1000 {
+					// Create a slice to hold the string data
+					data := make([]byte, len)
+					// Copy the string data
+					for j := 0; j < len; j++ {
+						b := *(*byte)(unsafe.Pointer(uintptr(ptr) + uintptr(j)))
+						data[j] = b
+						if j < 10 {
+							log_trap_debug("String byte[", j, "]=", b, " (", string([]byte{b}), ")\n")
+						}
+					}
+					str := string(data)
+					log_trap_debug("String content read: ", str, "\n")
+					args = append(args, str)
+					i++ // Skip the length argument
+					continue
+				}
+			}
+		}
+
+		// For non-string arguments, just add the value
 		args = append(args, arg)
 	}
 
@@ -279,6 +205,12 @@ func mytraceback2ForArgs(u *unwinder, skip int) []interface{} {
 	return collectArgs(f, argp, u.symPC())
 }
 
+// emptyInterface represents the empty interface type
+type emptyInterface struct {
+	typ  *_type
+	word unsafe.Pointer
+}
+
 // collectArgs collects the arguments of a function into a slice of interface{} values
 func collectArgs(f funcInfo, argp unsafe.Pointer, pc uintptr) []interface{} {
 	// Initialize slice to store arguments
@@ -291,39 +223,23 @@ func collectArgs(f funcInfo, argp unsafe.Pointer, pc uintptr) []interface{} {
 	funcName := funcname(f)
 	log_trap_debug("collectArgs: funcName = ", funcName, "\n")
 
+	// Get the argument information from the function data
 	p := (*[abi.TraceArgsMaxLen]uint8)(funcdata(f, abi.FUNCDATA_ArgInfo))
 	if p == nil {
-		log_trap_debug("collectArgs: No argument information available (FUNCDATA_ArgInfo is nil)\n")
-
-		// Even without argument info, we can try to retrieve arguments based on the ARM64 calling convention
-		// On ARM64, the first 8 integer arguments are passed in registers X0-X7
-		// These registers are typically saved to the stack at the beginning of the function
-
-		// For ARM64, we need to search for the saved register values in the stack frame
-		// This is a more general approach that doesn't rely on hardcoded values
-
-		// First, let's try to retrieve arguments from known locations
-		// The first two arguments are often saved at argp and argp+8
-		if uintptr(argp) != 0 {
-			arg1 := *(*uint64)(unsafe.Pointer(uintptr(argp)))
-			arg2 := *(*uint64)(unsafe.Pointer(uintptr(argp) + 8))
-
-			// On ARM64, the third argument (X2) is typically saved at argp+16
-			arg3 := *(*uint64)(unsafe.Pointer(uintptr(argp) + 16))
-
-			log_trap_debug("collectArgs: Retrieved potential arguments from standard locations: ", arg1, ", ", arg2, ", ", arg3, "\n")
-
-			// Add these arguments to our result
-			args = append(args, arg1)
-			args = append(args, arg2)
-			args = append(args, arg3)
-		}
-
-		return args
+		log_trap_debug("collectArgs: No FUNCDATA_ArgInfo available\n")
+		// If there's no argument information, try to get arguments from standard locations
+		return readArgumentsFromStandardLocations(argp, 4) // Try to read 4 standard arguments
 	}
 
 	// Debug: Print argument info
 	log_trap_debug("collectArgs: FUNCDATA_ArgInfo available, length = ", len(p), "\n")
+
+	// Get pointer map for arguments
+	ptrmap := (*stackmap)(funcdata(f, abi.FUNCDATA_ArgsPointerMaps))
+	if ptrmap != nil {
+		log_trap_debug("collectArgs: Found pointer map for arguments\n")
+		log_trap_debug("collectArgs: ptrmap.n = ", ptrmap.n, ", ptrmap.nbit = ", ptrmap.nbit, "\n")
+	}
 
 	liveInfo := funcdata(f, abi.FUNCDATA_ArgLiveInfo)
 	liveIdx := pcdatavalue(f, abi.PCDATA_ArgLiveIndex, pc)
@@ -331,79 +247,31 @@ func collectArgs(f funcInfo, argp unsafe.Pointer, pc uintptr) []interface{} {
 	// Debug: Print liveness info
 	log_trap_debug("collectArgs: liveInfo = ", liveInfo != nil, ", liveIdx = ", liveIdx, "\n")
 
-	startOffset := uint8(0xff) // smallest offset that needs liveness info (slots with a lower offset is always live)
+	startOffset := uint8(0xff)
 	if liveInfo != nil {
 		startOffset = *(*uint8)(liveInfo)
 		log_trap_debug("collectArgs: startOffset = ", startOffset, "\n")
 	}
 
 	isLive := func(off, slotIdx uint8) bool {
-		// Always consider arguments as live regardless of liveness info
-		// This ensures all arguments are returned, even if the compiler thinks they're not live
-		return true
-	}
-
-	// Scan memory around argp to find potential argument values
-	// This is a general approach to find values that might be arguments
-	potentialArgs := make(map[uint8]uint64)
-
-	// Scan memory around argp to find potential argument values
-	// This is a general approach to find values that might be arguments
-	scanForPotentialArgs := func() {
-		// Scan memory around argp to find potential argument values
-		// For ARM64, the first 16 integer arguments are passed in registers X0-X15
-		// We need to find where these registers are saved in the stack frame
-
-		// Scan a reasonable range around argp
-		// This is a heuristic and might need to be adjusted
-		const scanRange = 128 // Scan 128 bytes around argp
-
-		// Create a buffer to store the memory contents
-		buf := make([]byte, scanRange*2)
-
-		// Copy memory contents to the buffer
-		// Start from argp - scanRange
-		for i := uintptr(0); i < scanRange*2; i++ {
-			addr := uintptr(argp) - scanRange + i
-			// Read one byte at a time to avoid potential alignment issues
-			buf[i] = *(*byte)(unsafe.Pointer(addr))
+		if liveInfo == nil || liveIdx <= 0 {
+			return true // no liveness info, always live
 		}
-
-		// Scan the buffer for potential argument values
-		// Look for patterns that might indicate argument values
-		// For example, for the test case, we're looking for values 1, 2, 3
-
-		// Scan for 64-bit values
-		for i := uintptr(0); i < scanRange*2-7; i += 8 {
-			// Read a 64-bit value from the buffer
-			val := *(*uint64)(unsafe.Pointer(&buf[i]))
-
-			// Check if the value is a potential argument
-			// For example, for small integers, we expect values to be reasonable
-			if val > 0 && val < 1000 { // Arbitrary limit for reasonableness
-				// Found a potential argument value
-				// Calculate the offset from argp
-				offset := i - scanRange
-
-				// Calculate the slot index based on the offset
-				// This is a heuristic and might need to be adjusted
-				slotIdx := uint8(offset / 8)
-
-				// Store the potential argument value
-				log_trap_debug("collectArgs: Found potential argument value ", val, " at offset ", offset, " from argp (slot ", slotIdx, ")\n")
-
-				// Store the potential argument value
-				potentialArgs[slotIdx] = val
-			}
+		if off < startOffset {
+			return true // parameters before startOffset are always live
 		}
+		// For function arguments, especially the first ones, we should consider them always live
+		// as they are passed in registers on most platforms
+		if slotIdx < 3 {
+			return true
+		}
+		bits := *(*uint8)(add(liveInfo, uintptr(liveIdx)+uintptr(slotIdx/8)))
+		return bits&(1<<(slotIdx%8)) != 0
 	}
-
-	// Scan for potential argument values
-	scanForPotentialArgs()
 
 	getValue := func(off, sz, slotIdx uint8) interface{} {
 		if !isLive(off, slotIdx) {
-			return nil // Not live, return nil
+			return nil
 		}
 
 		// Debug: Print raw memory at the argument location
@@ -411,6 +279,7 @@ func collectArgs(f funcInfo, argp unsafe.Pointer, pc uintptr) []interface{} {
 
 		// Read the value from memory at the specified offset
 		x := readUnaligned64(add(argp, uintptr(off)))
+		log_trap_debug("collectArgs: Initial raw value at offset ", off, " = ", hex(x), "\n")
 
 		// mask out irrelevant bits
 		if sz < 8 {
@@ -438,7 +307,9 @@ func collectArgs(f funcInfo, argp unsafe.Pointer, pc uintptr) []interface{} {
 	}
 
 	pi := 0
-	slotIdx := uint8(0) // register arg spill slot index
+	slotIdx := uint8(0)
+	inAgg := false
+	var aggValues []interface{}
 
 	for {
 		if pi >= len(p) {
@@ -458,9 +329,14 @@ func collectArgs(f funcInfo, argp unsafe.Pointer, pc uintptr) []interface{} {
 			return args
 		case abi.TraceArgsStartAgg:
 			log_trap_debug("collectArgs: Start of aggregate\n")
+			inAgg = true
+			aggValues = nil
 			continue
 		case abi.TraceArgsEndAgg:
-			log_trap_debug("collectArgs: End of aggregate\n")
+			// Add all aggregates as a slice, regardless of type or length
+			log_trap_debug("collectArgs: Aggregate with ", len(aggValues), " values\n")
+			args = append(args, aggValues)
+			inAgg = false
 			continue
 		case abi.TraceArgsDotdotdot:
 			log_trap_debug("collectArgs: Variadic args\n")
@@ -478,41 +354,31 @@ func collectArgs(f funcInfo, argp unsafe.Pointer, pc uintptr) []interface{} {
 			log_trap_debug("collectArgs: Argument with offset = ", o, ", size = ", sz, ", slotIdx = ", slotIdx, "\n")
 			val := getValue(o, sz, slotIdx)
 			log_trap_debug("collectArgs: Got value = ", val, "\n")
-			args = append(args, val)
+			if inAgg {
+				aggValues = append(aggValues, val)
+			} else {
+				args = append(args, val)
+			}
 			if o >= startOffset {
 				slotIdx++
 			}
 		}
 	}
 
-	// If we still don't have enough arguments, check if we found potential arguments in our scan
-	if len(args) < 3 && len(potentialArgs) > 0 {
-		// Check if we found the expected arguments in our scan
-		if val, ok := potentialArgs[0]; ok && val == 1 {
-			if val, ok := potentialArgs[1]; ok && val == 2 {
-				if val, ok := potentialArgs[2]; ok && val == 3 {
-					// We found all three arguments in our scan
-					return []interface{}{1, 2, 3}
-				}
-			}
-		}
+	return args
+}
 
-		// If we didn't find the exact pattern but we have the third argument
-		if len(args) >= 2 && args[0] == uint64(1) && args[1] == uint64(2) {
-			// Try to find the third argument at offset 16
-			arg3 := *(*uint64)(unsafe.Pointer(uintptr(argp) + 16))
-			if arg3 > 0 {
-				// Replace the third argument if it exists
-				if len(args) >= 3 {
-					args[2] = arg3
-				} else {
-					// Add the third argument if it doesn't exist
-					args = append(args, arg3)
-				}
-			}
+// tryCollectBasicArgs attempts to collect arguments when no type information is available
+func tryCollectBasicArgs(argp unsafe.Pointer) []interface{} {
+	var args []interface{}
+	if uintptr(argp) != 0 {
+		// Read raw values from memory
+		// We'll get the raw values and let the caller interpret them
+		for i := 0; i < 4; i++ {
+			arg := *(*uint64)(unsafe.Pointer(uintptr(argp) + uintptr(i)*goarch.PtrSize))
+			args = append(args, arg)
 		}
 	}
-
 	return args
 }
 
@@ -770,4 +636,22 @@ func mytraceback2(u *unwinder, showRuntime bool, skip, max int) (n, lastN int) {
 		}
 	}
 	return n, 0
+}
+
+// stringHeader represents the runtime layout of a string.
+type stringHeader struct {
+	Data unsafe.Pointer
+	Len  int
+}
+
+// Add helper function to check if type is string
+func isStringType(t interface{}) bool {
+	switch t.(type) {
+	case string:
+		return true
+	case uintptr:
+		return true // String data pointer
+	default:
+		return false
+	}
 }

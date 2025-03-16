@@ -15,86 +15,17 @@ import (
 
 const __xgo_debug_trap_log = false
 
-func __xgo_log_trap_print(v any) {
-	if v == nil {
-		print("nil")
-		return
-	}
-	switch v := v.(type) {
-	case string:
-		print(v)
-	case int:
-		print(v)
-	case bool:
-		print("true")
-	case uintptr:
-		print("0x")
-		print(hex(v))
-	case uint:
-		print(v)
-	case uint8:
-		print(v)
-	case uint16:
-		print(v)
-	case uint32:
-		print(v)
-	case uint64:
-		print(v)
-		if v > 0xffff {
-			print("(hex ", hex(v), ")")
-		}
-	case int8:
-		print(v)
-	case int16:
-		print(v)
-	case int32:
-		print(v)
-	case int64:
-		print(v)
-	case float32:
-		print(v)
-	case float64:
-		print(v)
-	case []byte:
-		print(string(v))
-	case hex:
-		print(v)
-	case []interface{}:
-		print("[")
-		for i, arg := range v {
-			__xgo_log_trap_print(arg)
-			if i < len(v)-1 {
-				print(", ")
-			}
-		}
-		print("]")
-	default:
-		print(v)
-		print("(unknown type)")
-	}
-}
-
-func __xgo_log_trap_debug(msg ...any) {
-	if !__xgo_debug_trap_log {
-		return
-	}
-	// Use printlock to avoid interleaved output
-	printlock()
-
-	for _, m := range msg {
-		__xgo_log_trap_print(m)
-	}
-	print("\n")
-	printunlock()
-}
-
 // XgoGetCallerArgs returns the arguments of the caller as a slice of interface{} values.
 // This function takes no arguments but returns all arguments of its caller.
 //
 // Current implementation: ARM64 macOS/Darwin.
 //
+// returns:
+// - args: the arguments of the caller as a slice of interface{} values.
+// - pc: the program counter of the caller.
+//
 //go:noinline
-func XgoGetCallerArgs(skip int) []interface{} {
+func XgoGetCallerArgs(skip int) ([]interface{}, uintptr) {
 	// Get caller information
 	pc := sys.GetCallerPC()
 	sp := sys.GetCallerSP()
@@ -108,7 +39,7 @@ func XgoGetCallerArgs(skip int) []interface{} {
 
 	// Create a slice to store the caller's arguments
 	var args []interface{}
-
+	var fnPC uintptr
 	// Switch to system stack for stack unwinding (safer)
 	systemstack(func() {
 		// Initialize unwinder at the caller's frame
@@ -128,7 +59,8 @@ func XgoGetCallerArgs(skip int) []interface{} {
 		__xgo_log_trap_debug("TrapCallerArgs: caller frame argp = ", hex(uintptr(argp)), "")
 
 		// Use collectArgs to get the arguments
-		args = __xgo_collect_args(f, argp, u.symPC())
+		fnPC = u.symPC()
+		args = __xgo_collect_args(f, argp, fnPC)
 
 		// Debug: Print collected arguments
 		__xgo_log_trap_debug("TrapCallerArgs: collected args count = ", len(args), "")
@@ -139,7 +71,7 @@ func XgoGetCallerArgs(skip int) []interface{} {
 
 	// No special case handling for specific functions or tests
 	// Process all inputs using the same algorithm
-	return args
+	return args, fnPC
 }
 
 // __xgo_collect_args collects the arguments of a function into a slice of interface{} values
@@ -329,4 +261,77 @@ func __xgo_collect_args(f funcInfo, argp unsafe.Pointer, pc uintptr) []interface
 	__xgo_log_trap_debug("collectArgs: Final args = ", args)
 
 	return args
+}
+
+func __xgo_log_trap_print(v any) {
+	if v == nil {
+		print("nil")
+		return
+	}
+	switch v := v.(type) {
+	case string:
+		print(v)
+	case int:
+		print(v)
+	case bool:
+		print("true")
+	case uintptr:
+		print("0x")
+		print(hex(v))
+	case uint:
+		print(v)
+	case uint8:
+		print(v)
+	case uint16:
+		print(v)
+	case uint32:
+		print(v)
+	case uint64:
+		print(v)
+		if v > 0xffff {
+			print("(hex ", hex(v), ")")
+		}
+	case int8:
+		print(v)
+	case int16:
+		print(v)
+	case int32:
+		print(v)
+	case int64:
+		print(v)
+	case float32:
+		print(v)
+	case float64:
+		print(v)
+	case []byte:
+		print(string(v))
+	case hex:
+		print(v)
+	case []interface{}:
+		print("[")
+		for i, arg := range v {
+			__xgo_log_trap_print(arg)
+			if i < len(v)-1 {
+				print(", ")
+			}
+		}
+		print("]")
+	default:
+		print(v)
+		print("(unknown type)")
+	}
+}
+
+func __xgo_log_trap_debug(msg ...any) {
+	if !__xgo_debug_trap_log {
+		return
+	}
+	// Use printlock to avoid interleaved output
+	printlock()
+
+	for _, m := range msg {
+		__xgo_log_trap_print(m)
+	}
+	print("\n")
+	printunlock()
 }
